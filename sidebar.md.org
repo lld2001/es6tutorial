@@ -1,0 +1,56 @@
+* [[][ECMAScript 6 入门]]
+  :PROPERTIES:
+  :CUSTOM_ID: ecmascript-6-入门
+  :END:
+
+作者：[[http://www.ruanyifeng.com][阮一峰]]
+
+授权：署名-非商用许可证
+
+** 目录
+   :PROPERTIES:
+   :CUSTOM_ID: 目录
+   :END:
+
+1.  [[#README][前言]]
+2.  [[#docs/intro][ECMAScript 6简介]]
+3.  [[#docs/let][let 和 const 命令]]
+4.  [[#docs/destructuring][变量的解构赋值]]
+5.  [[#docs/string][字符串的扩展]]
+6.  [[#docs/string-methods][字符串的新增方法]]
+7.  [[#docs/regex][正则的扩展]]
+8.  [[#docs/number][数值的扩展]]
+9.  [[#docs/function][函数的扩展]]
+10. [[#docs/array][数组的扩展]]
+11. [[#docs/object][对象的扩展]]
+12. [[#docs/object-methods][对象的新增方法]]
+13. [[#docs/operator][运算符的扩展]]
+14. [[#docs/symbol][Symbol]]
+15. [[#docs/set-map][Set 和 Map 数据结构]]
+16. [[#docs/proxy][Proxy]]
+17. [[#docs/reflect][Reflect]]
+18. [[#docs/promise][Promise 对象]]
+19. [[#docs/iterator][Iterator 和 for...of 循环]]
+20. [[#docs/generator][Generator 函数的语法]]
+21. [[#docs/generator-async][Generator 函数的异步应用]]
+22. [[#docs/async][async 函数]]
+23. [[#docs/class][Class 的基本语法]]
+24. [[#docs/class-extends][Class 的继承]]
+25. [[#docs/module][Module 的语法]]
+26. [[#docs/module-loader][Module 的加载实现]]
+27. [[#docs/style][编程风格]]
+28. [[#docs/spec][读懂规格]]
+29. [[#docs/async-iterator][异步遍历器]]
+30. [[#docs/arraybuffer][ArrayBuffer]]
+31. [[#docs/proposals][最新提案]]
+32. [[#docs/decorator][Decorator]]
+33. [[#docs/reference][参考链接]]
+
+** 其他
+   :PROPERTIES:
+   :CUSTOM_ID: 其他
+   :END:
+
+- [[http://github.com/ruanyf/es6tutorial/][源码]]
+- [[https://github.com/ruanyf/es6tutorial/commits/gh-pages][修订历史]]
+- [[https://github.com/ruanyf/es6tutorial/issues][反馈意见]]
