@@ -6,7 +6,7 @@
 
 装饰器是一种函数，写成`@ + 函数名`。它可以放在类和类方法的定义前面。
 
-```javascript
+```js
 @frozen class Foo {
   @configurable(false)
   @enumerable(true)
@@ -23,7 +23,7 @@
 
 装饰器可以用来装饰整个类。
 
-```javascript
+```js
 @testable
 class MyTestableClass {
   // ...
@@ -40,7 +40,7 @@ MyTestableClass.isTestable // true
 
 基本上，装饰器的行为就是下面这样。
 
-```javascript
+```js
 @decorator
 class A {}
 
@@ -52,7 +52,7 @@ A = decorator(A) || A;
 
 也就是说，装饰器是一个对类进行处理的函数。装饰器函数的第一个参数，就是所要装饰的目标类。
 
-```javascript
+```js
 function testable(target) {
   // ...
 }
@@ -62,7 +62,7 @@ function testable(target) {
 
 如果觉得一个参数不够用，可以在装饰器外面再封装一层函数。
 
-```javascript
+```js
 function testable(isTestable) {
   return function(target) {
     target.isTestable = isTestable;
@@ -84,7 +84,7 @@ MyClass.isTestable // false
 
 前面的例子是为类添加一个静态属性，如果想添加实例属性，可以通过目标类的`prototype`对象操作。
 
-```javascript
+```js
 function testable(target) {
   target.prototype.isTestable = true;
 }
@@ -100,7 +100,7 @@ obj.isTestable // true
 
 下面是另外一个例子。
 
-```javascript
+```js
 // mixins.js
 export function mixins(...list) {
   return function (target) {
@@ -124,7 +124,7 @@ obj.foo() // 'foo'
 
 上面代码通过装饰器`mixins`，把`Foo`对象的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
 
-```javascript
+```js
 const Foo = {
   foo() { console.log('foo') }
 };
@@ -139,7 +139,7 @@ obj.foo() // 'foo'
 
 实际开发中，React 与 Redux 库结合使用时，常常需要写成下面这样。
 
-```javascript
+```js
 class MyReactComponent extends React.Component {}
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyReactComponent);
@@ -147,7 +147,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(MyReactComponent);
 
 有了装饰器，就可以改写上面的代码。
 
-```javascript
+```js
 @connect(mapStateToProps, mapDispatchToProps)
 export default class MyReactComponent extends React.Component {}
 ```
@@ -158,7 +158,7 @@ export default class MyReactComponent extends React.Component {}
 
 装饰器不仅可以装饰类，还可以装饰类的属性。
 
-```javascript
+```js
 class Person {
   @readonly
   name() { return `${this.first} ${this.last}` }
@@ -169,7 +169,7 @@ class Person {
 
 装饰器函数`readonly`一共可以接受三个参数。
 
-```javascript
+```js
 function readonly(target, name, descriptor){
   // descriptor对象原来的值如下
   // {
@@ -193,7 +193,7 @@ Object.defineProperty(Person.prototype, 'name', descriptor);
 
 下面是另一个例子，修改属性描述对象的`enumerable`属性，使得该属性不可遍历。
 
-```javascript
+```js
 class Person {
   @nonenumerable
   get kidCount() { return this.children.length; }
@@ -207,7 +207,7 @@ function nonenumerable(target, name, descriptor) {
 
 下面的`@log`装饰器，可以起到输出日志的作用。
 
-```javascript
+```js
 class Math {
   @log
   add(a, b) {
@@ -236,7 +236,7 @@ math.add(2, 4);
 
 装饰器有注释的作用。
 
-```javascript
+```js
 @testable
 class Person {
   @readonly
@@ -249,7 +249,7 @@ class Person {
 
 下面是使用 Decorator 写法的[组件](https://github.com/ionic-team/stencil)，看上去一目了然。
 
-```javascript
+```js
 @Component({
   tag: 'my-component',
   styleUrl: 'my-component.scss'
@@ -269,7 +269,7 @@ export class MyComponent {
 
 如果同一个方法有多个装饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
 
-```javascript
+```js
 function dec(id){
   console.log('evaluated', id);
   return (target, property, descriptor) => console.log('executed', id);
@@ -294,7 +294,7 @@ class Example {
 
 装饰器只能用于类和类的方法，不能用于函数，因为存在函数提升。
 
-```javascript
+```js
 var counter = 0;
 
 var add = function () {
@@ -308,7 +308,7 @@ function foo() {
 
 上面的代码，意图是执行后`counter`等于 1，但是实际上结果是`counter`等于 0。因为函数提升，使得实际执行的代码是下面这样。
 
-```javascript
+```js
 var counter;
 var add;
 
@@ -325,7 +325,7 @@ add = function () {
 
 下面是另一个例子。
 
-```javascript
+```js
 var readOnly = require("some-decorator");
 
 @readOnly
@@ -335,7 +335,7 @@ function foo() {
 
 上面代码也有问题，因为实际执行是下面这样。
 
-```javascript
+```js
 var readOnly;
 
 @readOnly
@@ -349,7 +349,7 @@ readOnly = require("some-decorator");
 
 另一方面，如果一定要装饰函数，可以采用高阶函数的形式直接执行。
 
-```javascript
+```js
 function doSomething(name) {
   console.log('Hello, ' + name);
 }
@@ -374,7 +374,7 @@ const wrapped = loggingDecorator(doSomething);
 
 `autobind`装饰器使得方法中的`this`对象，绑定原始对象。
 
-```javascript
+```js
 import { autobind } from 'core-decorators';
 
 class Person {
@@ -395,7 +395,7 @@ getPerson() === person;
 
 `readonly`装饰器使得属性或方法不可写。
 
-```javascript
+```js
 import { readonly } from 'core-decorators';
 
 class Meal {
@@ -412,7 +412,7 @@ dinner.entree = 'salmon';
 
 `override`装饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
 
-```javascript
+```js
 import { override } from 'core-decorators';
 
 class Parent {
@@ -440,7 +440,7 @@ class Child extends Parent {
 
 `deprecate`或`deprecated`装饰器在控制台显示一条警告，表示该方法将废除。
 
-```javascript
+```js
 import { deprecate } from 'core-decorators';
 
 class Person {
@@ -473,7 +473,7 @@ person.facepalmHarder();
 
 `suppressWarnings`装饰器抑制`deprecated`装饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
 
-```javascript
+```js
 import { suppressWarnings } from 'core-decorators';
 
 class Person {
@@ -496,7 +496,7 @@ person.facepalmWithoutWarning();
 
 我们可以使用装饰器，使得对象的方法被调用时，自动发出一个事件。
 
-```javascript
+```js
 const postal = require("postal/lib/postal.lodash");
 
 export default function publish(topic, channel) {
@@ -523,7 +523,7 @@ export default function publish(topic, channel) {
 
 它的用法如下。
 
-```javascript
+```js
 // index.js
 import publish from './publish';
 
@@ -563,7 +563,7 @@ $ bash-node index.js
 
 请看下面的例子。
 
-```javascript
+```js
 const Foo = {
   foo() { console.log('foo') }
 };
@@ -580,7 +580,7 @@ obj.foo() // 'foo'
 
 下面，我们部署一个通用脚本`mixins.js`，将 Mixin 写成一个装饰器。
 
-```javascript
+```js
 export function mixins(...list) {
   return function (target) {
     Object.assign(target.prototype, ...list);
@@ -590,7 +590,7 @@ export function mixins(...list) {
 
 然后，就可以使用上面这个装饰器，为类“混入”各种方法。
 
-```javascript
+```js
 import { mixins } from './mixins';
 
 const Foo = {
@@ -608,7 +608,7 @@ obj.foo() // "foo"
 
 不过，上面的方法会改写`MyClass`类的`prototype`对象，如果不喜欢这一点，也可以通过类的继承实现 Mixin。
 
-```javascript
+```js
 class MyClass extends MyBaseClass {
   /* ... */
 }
@@ -616,7 +616,7 @@ class MyClass extends MyBaseClass {
 
 上面代码中，`MyClass`继承了`MyBaseClass`。如果我们想在`MyClass`里面“混入”一个`foo`方法，一个办法是在`MyClass`和`MyBaseClass`之间插入一个混入类，这个类具有`foo`方法，并且继承了`MyBaseClass`的所有方法，然后`MyClass`再继承这个类。
 
-```javascript
+```js
 let MyMixin = (superclass) => class extends superclass {
   foo() {
     console.log('foo from MyMixin');
@@ -628,7 +628,7 @@ let MyMixin = (superclass) => class extends superclass {
 
 接着，目标类再去继承这个混入类，就达到了“混入”`foo`方法的目的。
 
-```javascript
+```js
 class MyClass extends MyMixin(MyBaseClass) {
   /* ... */
 }
@@ -639,7 +639,7 @@ c.foo(); // "foo from MyMixin"
 
 如果需要“混入”多个方法，就生成多个混入类。
 
-```javascript
+```js
 class MyClass extends Mixin1(Mixin2(MyBaseClass)) {
   /* ... */
 }
@@ -647,7 +647,7 @@ class MyClass extends Mixin1(Mixin2(MyBaseClass)) {
 
 这种写法的一个好处，是可以调用`super`，因此可以避免在“混入”过程中覆盖父类的同名方法。
 
-```javascript
+```js
 let Mixin1 = (superclass) => class extends superclass {
   foo() {
     console.log('foo from Mixin1');
@@ -678,7 +678,7 @@ class C extends Mixin1(Mixin2(S)) {
 
 上面代码中，每一次`混入`发生时，都调用了父类的`super.foo`方法，导致父类的同名方法没有被覆盖，行为被保留了下来。
 
-```javascript
+```js
 new C().foo()
 // foo from C
 // foo from Mixin1
@@ -692,7 +692,7 @@ Trait 也是一种装饰器，效果与 Mixin 类似，但是提供更多功能�
 
 下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的`traits`装饰器，不仅可以接受对象，还可以接受 ES6 类作为参数。
 
-```javascript
+```js
 import { traits } from 'traits-decorator';
 
 class TFoo {
@@ -715,7 +715,7 @@ obj.bar() // bar
 
 Trait 不允许“混入”同名方法。
 
-```javascript
+```js
 import { traits } from 'traits-decorator';
 
 class TFoo {
@@ -739,7 +739,7 @@ class MyClass { }
 
 一种解决方法是排除`TBar`的`foo`方法。
 
-```javascript
+```js
 import { traits, excludes } from 'traits-decorator';
 
 class TFoo {
@@ -763,7 +763,7 @@ obj.bar() // bar
 
 另一种方法是为`TBar`的`foo`方法起一个别名。
 
-```javascript
+```js
 import { traits, alias } from 'traits-decorator';
 
 class TFoo {
@@ -788,7 +788,7 @@ obj.bar() // bar
 
 `alias`和`excludes`方法，可以结合起来使用。
 
-```javascript
+```js
 @traits(TExample::excludes('foo','bar')::alias({baz:'exampleBaz'}))
 class MyClass {}
 ```
@@ -797,7 +797,7 @@ class MyClass {}
 
 `as`方法则为上面的代码提供了另一种写法。
 
-```javascript
+```js
 @traits(TExample::as({excludes:['foo', 'bar'], alias: {baz: 'exampleBaz'}}))
 class MyClass {}
 ```

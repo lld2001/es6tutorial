@@ -2,32 +2,29 @@
   :PROPERTIES:
   :CUSTOM_ID: class-的基本语法
   :END:
-
 ** 简介
    :PROPERTIES:
    :CUSTOM_ID: 简介
    :END:
-
 *** 类的由来
     :PROPERTIES:
     :CUSTOM_ID: 类的由来
     :END:
-
 JavaScript
 语言中，生成实例对象的传统方法是通过构造函数。下面是一个例子。
 
-#+BEGIN_EXAMPLE
-    function Point(x, y) {
-      this.x = x;
-      this.y = y;
-    }
+#+begin_src js
+  function Point(x, y) {
+    this.x = x;
+    this.y = y;
+  }
 
-    Point.prototype.toString = function () {
-      return '(' + this.x + ', ' + this.y + ')';
-    };
+  Point.prototype.toString = function () {
+    return '(' + this.x + ', ' + this.y + ')';
+  };
 
-    var p = new Point(1, 2);
-#+END_EXAMPLE
+  var p = new Point(1, 2);
+#+end_src
 
 上面这种写法跟传统的面向对象语言（比如 C++ 和
 Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
@@ -39,148 +36,148 @@ Class（类）这个概念，作为对象的模板。通过=class=关键字，�
 都可以做到，新的=class=写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用
 ES6 的=class=改写，就是下面这样。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-      }
-
-      toString() {
-        return '(' + this.x + ', ' + this.y + ')';
-      }
+#+begin_src js
+  class Point {
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
     }
-#+END_EXAMPLE
 
-上面代码定义了一个"类"，可以看到里面有一个=constructor()=方法，这就是构造方法，而=this=关键字则代表实例对象。这种新的
+    toString() {
+      return '(' + this.x + ', ' + this.y + ')';
+    }
+  }
+#+end_src
+
+上面代码定义了一个“类”，可以看到里面有一个=constructor()=方法，这就是构造方法，而=this=关键字则代表实例对象。这种新的
 Class 写法，本质上与本章开头的 ES5 的构造函数=Point=是一致的。
 
 =Point=类除了构造方法，还定义了一个=toString()=方法。注意，定义=toString()=方法的时候，前面不需要加上=function=这个关键字，直接把函数定义放进去了就可以了。另外，方法与方法之间不需要逗号分隔，加了会报错。
 
 ES6 的类，完全可以看作构造函数的另一种写法。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      // ...
-    }
+#+begin_src js
+  class Point {
+    // ...
+  }
 
-    typeof Point // "function"
-    Point === Point.prototype.constructor // true
-#+END_EXAMPLE
+  typeof Point // "function"
+  Point === Point.prototype.constructor // true
+#+end_src
 
 上面代码表明，类的数据类型就是函数，类本身就指向构造函数。
 
 使用的时候，也是直接对类使用=new=命令，跟构造函数的用法完全一致。
 
-#+BEGIN_EXAMPLE
-    class Bar {
-      doStuff() {
-        console.log('stuff');
-      }
+#+begin_src js
+  class Bar {
+    doStuff() {
+      console.log('stuff');
     }
+  }
 
-    const b = new Bar();
-    b.doStuff() // "stuff"
-#+END_EXAMPLE
+  const b = new Bar();
+  b.doStuff() // "stuff"
+#+end_src
 
 构造函数的=prototype=属性，在 ES6
-的"类"上面继续存在。事实上，类的所有方法都定义在类的=prototype=属性上面。
+的“类”上面继续存在。事实上，类的所有方法都定义在类的=prototype=属性上面。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      constructor() {
-        // ...
-      }
-
-      toString() {
-        // ...
-      }
-
-      toValue() {
-        // ...
-      }
+#+begin_src js
+  class Point {
+    constructor() {
+      // ...
     }
 
-    // 等同于
+    toString() {
+      // ...
+    }
 
-    Point.prototype = {
-      constructor() {},
-      toString() {},
-      toValue() {},
-    };
-#+END_EXAMPLE
+    toValue() {
+      // ...
+    }
+  }
+
+  // 等同于
+
+  Point.prototype = {
+    constructor() {},
+    toString() {},
+    toValue() {},
+  };
+#+end_src
 
 上面代码中，=constructor()=、=toString()=、=toValue()=这三个方法，其实都是定义在=Point.prototype=上面。
 
 因此，在类的实例上面调用方法，其实就是调用原型上的方法。
 
-#+BEGIN_EXAMPLE
-    class B {}
-    const b = new B();
+#+begin_src js
+  class B {}
+  const b = new B();
 
-    b.constructor === B.prototype.constructor // true
-#+END_EXAMPLE
+  b.constructor === B.prototype.constructor // true
+#+end_src
 
 上面代码中，=b=是=B=类的实例，它的=constructor()=方法就是=B=类原型的=constructor()=方法。
 
 由于类的方法都定义在=prototype=对象上面，所以类的新方法可以添加在=prototype=对象上面。=Object.assign()=方法可以很方便地一次向类添加多个方法。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      constructor(){
-        // ...
-      }
+#+begin_src js
+  class Point {
+    constructor(){
+      // ...
     }
+  }
 
-    Object.assign(Point.prototype, {
-      toString(){},
-      toValue(){}
-    });
-#+END_EXAMPLE
+  Object.assign(Point.prototype, {
+    toString(){},
+    toValue(){}
+  });
+#+end_src
 
-=prototype=对象的=constructor()=属性，直接指向"类"的本身，这与 ES5
+=prototype=对象的=constructor()=属性，直接指向“类”的本身，这与 ES5
 的行为是一致的。
 
-#+BEGIN_EXAMPLE
-    Point.prototype.constructor === Point // true
-#+END_EXAMPLE
+#+begin_src js
+  Point.prototype.constructor === Point // true
+#+end_src
 
 另外，类的内部所有定义的方法，都是不可枚举的（non-enumerable）。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      constructor(x, y) {
-        // ...
-      }
-
-      toString() {
-        // ...
-      }
+#+begin_src js
+  class Point {
+    constructor(x, y) {
+      // ...
     }
 
-    Object.keys(Point.prototype)
-    // []
-    Object.getOwnPropertyNames(Point.prototype)
-    // ["constructor","toString"]
-#+END_EXAMPLE
+    toString() {
+      // ...
+    }
+  }
+
+  Object.keys(Point.prototype)
+  // []
+  Object.getOwnPropertyNames(Point.prototype)
+  // ["constructor","toString"]
+#+end_src
 
 上面代码中，=toString()=方法是=Point=类内部定义的方法，它是不可枚举的。这一点与
 ES5 的行为不一致。
 
-#+BEGIN_EXAMPLE
-    var Point = function (x, y) {
-      // ...
-    };
+#+begin_src js
+  var Point = function (x, y) {
+    // ...
+  };
 
-    Point.prototype.toString = function () {
-      // ...
-    };
+  Point.prototype.toString = function () {
+    // ...
+  };
 
-    Object.keys(Point.prototype)
-    // ["toString"]
-    Object.getOwnPropertyNames(Point.prototype)
-    // ["constructor","toString"]
-#+END_EXAMPLE
+  Object.keys(Point.prototype)
+  // ["toString"]
+  Object.getOwnPropertyNames(Point.prototype)
+  // ["constructor","toString"]
+#+end_src
 
 上面代码采用 ES5 的写法，=toString()=方法就是可枚举的。
 
@@ -188,195 +185,192 @@ ES5 的行为不一致。
     :PROPERTIES:
     :CUSTOM_ID: constructor-方法
     :END:
-
 =constructor()=方法是类的默认方法，通过=new=命令生成对象实例时，自动调用该方法。一个类必须有=constructor()=方法，如果没有显式定义，一个空的=constructor()=方法会被默认添加。
 
-#+BEGIN_EXAMPLE
-    class Point {
-    }
+#+begin_src js
+  class Point {
+  }
 
-    // 等同于
-    class Point {
-      constructor() {}
-    }
-#+END_EXAMPLE
+  // 等同于
+  class Point {
+    constructor() {}
+  }
+#+end_src
 
 上面代码中，定义了一个空的类=Point=，JavaScript
 引擎会自动为它添加一个空的=constructor()=方法。
 
 =constructor()=方法默认返回实例对象（即=this=），完全可以指定返回另外一个对象。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      constructor() {
-        return Object.create(null);
-      }
+#+begin_src js
+  class Foo {
+    constructor() {
+      return Object.create(null);
     }
+  }
 
-    new Foo() instanceof Foo
-    // false
-#+END_EXAMPLE
+  new Foo() instanceof Foo
+  // false
+#+end_src
 
 上面代码中，=constructor()=函数返回一个全新的对象，结果导致实例对象不是=Foo=类的实例。
 
 类必须使用=new=调用，否则会报错。这是它跟普通构造函数的一个主要区别，后者不用=new=也可以执行。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      constructor() {
-        return Object.create(null);
-      }
+#+begin_src js
+  class Foo {
+    constructor() {
+      return Object.create(null);
     }
+  }
 
-    Foo()
-    // TypeError: Class constructor Foo cannot be invoked without 'new'
-#+END_EXAMPLE
+  Foo()
+  // TypeError: Class constructor Foo cannot be invoked without 'new'
+#+end_src
 
 *** 类的实例
     :PROPERTIES:
     :CUSTOM_ID: 类的实例
     :END:
-
 生成类的实例的写法，与 ES5
 完全一样，也是使用=new=命令。前面说过，如果忘记加上=new=，像函数那样调用=Class=，将会报错。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      // ...
-    }
+#+begin_src js
+  class Point {
+    // ...
+  }
 
-    // 报错
-    var point = Point(2, 3);
+  // 报错
+  var point = Point(2, 3);
 
-    // 正确
-    var point = new Point(2, 3);
-#+END_EXAMPLE
+  // 正确
+  var point = new Point(2, 3);
+#+end_src
 
 与 ES5
 一样，实例的属性除非显式定义在其本身（即定义在=this=对象上），否则都是定义在原型上（即定义在=class=上）。
 
-#+BEGIN_EXAMPLE
-    //定义类
-    class Point {
+#+begin_src js
+  //定义类
+  class Point {
 
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-      }
-
-      toString() {
-        return '(' + this.x + ', ' + this.y + ')';
-      }
-
+    constructor(x, y) {
+      this.x = x;
+      this.y = y;
     }
 
-    var point = new Point(2, 3);
+    toString() {
+      return '(' + this.x + ', ' + this.y + ')';
+    }
 
-    point.toString() // (2, 3)
+  }
 
-    point.hasOwnProperty('x') // true
-    point.hasOwnProperty('y') // true
-    point.hasOwnProperty('toString') // false
-    point.__proto__.hasOwnProperty('toString') // true
-#+END_EXAMPLE
+  var point = new Point(2, 3);
+
+  point.toString() // (2, 3)
+
+  point.hasOwnProperty('x') // true
+  point.hasOwnProperty('y') // true
+  point.hasOwnProperty('toString') // false
+  point.__proto__.hasOwnProperty('toString') // true
+#+end_src
 
 上面代码中，=x=和=y=都是实例对象=point=自身的属性（因为定义在=this=对象上），所以=hasOwnProperty()=方法返回=true=，而=toString()=是原型对象的属性（因为定义在=Point=类上），所以=hasOwnProperty()=方法返回=false=。这些都与
 ES5 的行为保持一致。
 
 与 ES5 一样，类的所有实例共享一个原型对象。
 
-#+BEGIN_EXAMPLE
-    var p1 = new Point(2,3);
-    var p2 = new Point(3,2);
+#+begin_src js
+  var p1 = new Point(2,3);
+  var p2 = new Point(3,2);
 
-    p1.__proto__ === p2.__proto__
-    //true
-#+END_EXAMPLE
+  p1.__proto__ === p2.__proto__
+  //true
+#+end_src
 
 上面代码中，=p1=和=p2=都是=Point=的实例，它们的原型都是=Point.prototype=，所以=__proto__=属性是相等的。
 
-这也意味着，可以通过实例的=__proto__=属性为"类"添加方法。
+这也意味着，可以通过实例的=__proto__=属性为“类”添加方法。
 
-#+BEGIN_QUOTE
+#+begin_quote
   =__proto__=
   并不是语言本身的特性，这是各大厂商具体实现时添加的私有属性，虽然目前很多现代浏览器的
   JS
   引擎中都提供了这个私有属性，但依旧不建议在生产中使用该属性，避免对环境产生依赖。生产环境中，我们可以使用
   =Object.getPrototypeOf=
   方法来获取实例对象的原型，然后再来为原型添加方法/属性。
-#+END_QUOTE
+#+end_quote
 
-#+BEGIN_EXAMPLE
-    var p1 = new Point(2,3);
-    var p2 = new Point(3,2);
+#+begin_src js
+  var p1 = new Point(2,3);
+  var p2 = new Point(3,2);
 
-    p1.__proto__.printName = function () { return 'Oops' };
+  p1.__proto__.printName = function () { return 'Oops' };
 
-    p1.printName() // "Oops"
-    p2.printName() // "Oops"
+  p1.printName() // "Oops"
+  p2.printName() // "Oops"
 
-    var p3 = new Point(4,2);
-    p3.printName() // "Oops"
-#+END_EXAMPLE
+  var p3 = new Point(4,2);
+  p3.printName() // "Oops"
+#+end_src
 
-上面代码在=p1=的原型上添加了一个=printName()=方法，由于=p1=的原型就是=p2=的原型，因此=p2=也可以调用这个方法。而且，此后新建的实例=p3=也可以调用这个方法。这意味着，使用实例的=__proto__=属性改写原型，必须相当谨慎，不推荐使用，因为这会改变"类"的原始定义，影响到所有实例。
+上面代码在=p1=的原型上添加了一个=printName()=方法，由于=p1=的原型就是=p2=的原型，因此=p2=也可以调用这个方法。而且，此后新建的实例=p3=也可以调用这个方法。这意味着，使用实例的=__proto__=属性改写原型，必须相当谨慎，不推荐使用，因为这会改变“类”的原始定义，影响到所有实例。
 
 *** 取值函数（getter）和存值函数（setter）
     :PROPERTIES:
     :CUSTOM_ID: 取值函数getter和存值函数setter
     :END:
-
 与 ES5
-一样，在"类"的内部可以使用=get=和=set=关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
+一样，在“类”的内部可以使用=get=和=set=关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
 
-#+BEGIN_EXAMPLE
-    class MyClass {
-      constructor() {
-        // ...
-      }
-      get prop() {
-        return 'getter';
-      }
-      set prop(value) {
-        console.log('setter: '+value);
-      }
+#+begin_src js
+  class MyClass {
+    constructor() {
+      // ...
     }
+    get prop() {
+      return 'getter';
+    }
+    set prop(value) {
+      console.log('setter: '+value);
+    }
+  }
 
-    let inst = new MyClass();
+  let inst = new MyClass();
 
-    inst.prop = 123;
-    // setter: 123
+  inst.prop = 123;
+  // setter: 123
 
-    inst.prop
-    // 'getter'
-#+END_EXAMPLE
+  inst.prop
+  // 'getter'
+#+end_src
 
 上面代码中，=prop=属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
 
 存值函数和取值函数是设置在属性的 Descriptor 对象上的。
 
-#+BEGIN_EXAMPLE
-    class CustomHTMLElement {
-      constructor(element) {
-        this.element = element;
-      }
-
-      get html() {
-        return this.element.innerHTML;
-      }
-
-      set html(value) {
-        this.element.innerHTML = value;
-      }
+#+begin_src js
+  class CustomHTMLElement {
+    constructor(element) {
+      this.element = element;
     }
 
-    var descriptor = Object.getOwnPropertyDescriptor(
-      CustomHTMLElement.prototype, "html"
-    );
+    get html() {
+      return this.element.innerHTML;
+    }
 
-    "get" in descriptor  // true
-    "set" in descriptor  // true
-#+END_EXAMPLE
+    set html(value) {
+      this.element.innerHTML = value;
+    }
+  }
+
+  var descriptor = Object.getOwnPropertyDescriptor(
+    CustomHTMLElement.prototype, "html"
+  );
+
+  "get" in descriptor  // true
+  "set" in descriptor  // true
+#+end_src
 
 上面代码中，存值函数和取值函数是定义在=html=属性的描述对象上面，这与 ES5
 完全一致。
@@ -385,22 +379,21 @@ ES5 的行为保持一致。
     :PROPERTIES:
     :CUSTOM_ID: 属性表达式
     :END:
-
 类的属性名，可以采用表达式。
 
-#+BEGIN_EXAMPLE
-    let methodName = 'getArea';
+#+begin_src js
+  let methodName = 'getArea';
 
-    class Square {
-      constructor(length) {
-        // ...
-      }
-
-      [methodName]() {
-        // ...
-      }
+  class Square {
+    constructor(length) {
+      // ...
     }
-#+END_EXAMPLE
+
+    [methodName]() {
+      // ...
+    }
+  }
+#+end_src
 
 上面代码中，=Square=类的方法名=getArea=，是从表达式得到的。
 
@@ -408,49 +401,48 @@ ES5 的行为保持一致。
     :PROPERTIES:
     :CUSTOM_ID: class-表达式
     :END:
-
 与函数一样，类也可以使用表达式的形式定义。
 
-#+BEGIN_EXAMPLE
-    const MyClass = class Me {
-      getClassName() {
-        return Me.name;
-      }
-    };
-#+END_EXAMPLE
+#+begin_src js
+  const MyClass = class Me {
+    getClassName() {
+      return Me.name;
+    }
+  };
+#+end_src
 
 上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是=Me=，但是=Me=只在
 Class 的内部可用，指代当前类。在 Class 外部，这个类只能用=MyClass=引用。
 
-#+BEGIN_EXAMPLE
-    let inst = new MyClass();
-    inst.getClassName() // Me
-    Me.name // ReferenceError: Me is not defined
-#+END_EXAMPLE
+#+begin_src js
+  let inst = new MyClass();
+  inst.getClassName() // Me
+  Me.name // ReferenceError: Me is not defined
+#+end_src
 
 上面代码表示，=Me=只在 Class 内部有定义。
 
 如果类的内部没用到的话，可以省略=Me=，也就是可以写成下面的形式。
 
-#+BEGIN_EXAMPLE
-    const MyClass = class { /* ... */ };
-#+END_EXAMPLE
+#+begin_src js
+  const MyClass = class { /* ... */ };
+#+end_src
 
 采用 Class 表达式，可以写出立即执行的 Class。
 
-#+BEGIN_EXAMPLE
-    let person = new class {
-      constructor(name) {
-        this.name = name;
-      }
+#+begin_src js
+  let person = new class {
+    constructor(name) {
+      this.name = name;
+    }
 
-      sayName() {
-        console.log(this.name);
-      }
-    }('张三');
+    sayName() {
+      console.log(this.name);
+    }
+  }('张三');
 
-    person.sayName(); // "张三"
-#+END_EXAMPLE
+  person.sayName(); // "张三"
+#+end_src
 
 上面代码中，=person=是一个立即执行的类的实例。
 
@@ -458,7 +450,6 @@ Class 的内部可用，指代当前类。在 Class 外部，这个类只能用=
     :PROPERTIES:
     :CUSTOM_ID: 注意点
     :END:
-
 *（1）严格模式*
 
 类和模块的内部，默认就是严格模式，所以不需要使用=use strict=指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。考虑到未来所有的代码，其实都是运行在模块之中，所以
@@ -468,21 +459,21 @@ ES6 实际上把整个语言升级到了严格模式。
 
 类不存在变量提升（hoist），这一点与 ES5 完全不同。
 
-#+BEGIN_EXAMPLE
-    new Foo(); // ReferenceError
-    class Foo {}
-#+END_EXAMPLE
+#+begin_src js
+  new Foo(); // ReferenceError
+  class Foo {}
+#+end_src
 
 上面代码中，=Foo=类使用在前，定义在后，这样会报错，因为 ES6
 不会把类的声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
 
-#+BEGIN_EXAMPLE
-    {
-      let Foo = class {};
-      class Bar extends Foo {
-      }
+#+begin_src js
+  {
+    let Foo = class {};
+    class Bar extends Foo {
     }
-#+END_EXAMPLE
+  }
+#+end_src
 
 上面的代码不会报错，因为=Bar=继承=Foo=的时候，=Foo=已经有定义了。但是，如果存在=class=的提升，上面代码就会报错，因为=class=会被提升到代码头部，而=let=命令是不提升的，所以导致=Bar=继承=Foo=的时候，=Foo=还没有定义。
 
@@ -491,10 +482,10 @@ ES6 实际上把整个语言升级到了严格模式。
 由于本质上，ES6 的类只是 ES5
 的构造函数的一层包装，所以函数的许多特性都被=Class=继承，包括=name=属性。
 
-#+BEGIN_EXAMPLE
-    class Point {}
-    Point.name // "Point"
-#+END_EXAMPLE
+#+begin_src js
+  class Point {}
+  Point.name // "Point"
+#+end_src
 
 =name=属性总是返回紧跟在=class=关键字后面的类名。
 
@@ -502,24 +493,24 @@ ES6 实际上把整个语言升级到了严格模式。
 
 如果某个方法之前加上星号（=*=），就表示该方法是一个 Generator 函数。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      constructor(...args) {
-        this.args = args;
-      }
-      * [Symbol.iterator]() {
-        for (let arg of this.args) {
-          yield arg;
-        }
+#+begin_src js
+  class Foo {
+    constructor(...args) {
+      this.args = args;
+    }
+    * [Symbol.iterator]() {
+      for (let arg of this.args) {
+        yield arg;
       }
     }
+  }
 
-    for (let x of new Foo('hello', 'world')) {
-      console.log(x);
-    }
-    // hello
-    // world
-#+END_EXAMPLE
+  for (let x of new Foo('hello', 'world')) {
+    console.log(x);
+  }
+  // hello
+  // world
+#+end_src
 
 上面代码中，=Foo=类的=Symbol.iterator=方法前有一个星号，表示该方法是一个
 Generator
@@ -529,21 +520,21 @@ Generator
 
 类的方法内部如果含有=this=，它默认指向类的实例。但是，必须非常小心，一旦单独使用该方法，很可能报错。
 
-#+BEGIN_EXAMPLE
-    class Logger {
-      printName(name = 'there') {
-        this.print(`Hello ${name}`);
-      }
-
-      print(text) {
-        console.log(text);
-      }
+#+begin_src js
+  class Logger {
+    printName(name = 'there') {
+      this.print(`Hello ${name}`);
     }
 
-    const logger = new Logger();
-    const { printName } = logger;
-    printName(); // TypeError: Cannot read property 'print' of undefined
-#+END_EXAMPLE
+    print(text) {
+      console.log(text);
+    }
+  }
+
+  const logger = new Logger();
+  const { printName } = logger;
+  printName(); // TypeError: Cannot read property 'print' of undefined
+#+end_src
 
 上面代码中，=printName=方法中的=this=，默认指向=Logger=类的实例。但是，如果将这个方法提取出来单独使用，=this=会指向该方法运行时所在的环境（由于
 class 内部是严格模式，所以 this
@@ -551,184 +542,182 @@ class 内部是严格模式，所以 this
 
 一个比较简单的解决方法是，在构造方法中绑定=this=，这样就不会找不到=print=方法了。
 
-#+BEGIN_EXAMPLE
-    class Logger {
-      constructor() {
-        this.printName = this.printName.bind(this);
-      }
-
-      // ...
+#+begin_src js
+  class Logger {
+    constructor() {
+      this.printName = this.printName.bind(this);
     }
-#+END_EXAMPLE
+
+    // ...
+  }
+#+end_src
 
 另一种解决方法是使用箭头函数。
 
-#+BEGIN_EXAMPLE
-    class Obj {
-      constructor() {
-        this.getThis = () => this;
-      }
+#+begin_src js
+  class Obj {
+    constructor() {
+      this.getThis = () => this;
     }
+  }
 
-    const myObj = new Obj();
-    myObj.getThis() === myObj // true
-#+END_EXAMPLE
+  const myObj = new Obj();
+  myObj.getThis() === myObj // true
+#+end_src
 
 箭头函数内部的=this=总是指向定义时所在的对象。上面代码中，箭头函数位于构造函数内部，它的定义生效的时候，是在构造函数执行的时候。这时，箭头函数所在的运行环境，肯定是实例对象，所以=this=会总是指向实例对象。
 
 还有一种解决方法是使用=Proxy=，获取方法的时候，自动绑定=this=。
 
-#+BEGIN_EXAMPLE
-    function selfish (target) {
-      const cache = new WeakMap();
-      const handler = {
-        get (target, key) {
-          const value = Reflect.get(target, key);
-          if (typeof value !== 'function') {
-            return value;
-          }
-          if (!cache.has(value)) {
-            cache.set(value, value.bind(target));
-          }
-          return cache.get(value);
+#+begin_src js
+  function selfish (target) {
+    const cache = new WeakMap();
+    const handler = {
+      get (target, key) {
+        const value = Reflect.get(target, key);
+        if (typeof value !== 'function') {
+          return value;
         }
-      };
-      const proxy = new Proxy(target, handler);
-      return proxy;
-    }
+        if (!cache.has(value)) {
+          cache.set(value, value.bind(target));
+        }
+        return cache.get(value);
+      }
+    };
+    const proxy = new Proxy(target, handler);
+    return proxy;
+  }
 
-    const logger = selfish(new Logger());
-#+END_EXAMPLE
+  const logger = selfish(new Logger());
+#+end_src
 
 ** 静态方法
    :PROPERTIES:
    :CUSTOM_ID: 静态方法
    :END:
+类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上=static=关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
-类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上=static=关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为"静态方法"。
-
-#+BEGIN_EXAMPLE
-    class Foo {
-      static classMethod() {
-        return 'hello';
-      }
+#+begin_src js
+  class Foo {
+    static classMethod() {
+      return 'hello';
     }
+  }
 
-    Foo.classMethod() // 'hello'
+  Foo.classMethod() // 'hello'
 
-    var foo = new Foo();
-    foo.classMethod()
-    // TypeError: foo.classMethod is not a function
-#+END_EXAMPLE
+  var foo = new Foo();
+  foo.classMethod()
+  // TypeError: foo.classMethod is not a function
+#+end_src
 
 上面代码中，=Foo=类的=classMethod=方法前有=static=关键字，表明该方法是一个静态方法，可以直接在=Foo=类上调用（=Foo.classMethod()=），而不是在=Foo=类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
 
 注意，如果静态方法包含=this=关键字，这个=this=指的是类，而不是实例。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      static bar() {
-        this.baz();
-      }
-      static baz() {
-        console.log('hello');
-      }
-      baz() {
-        console.log('world');
-      }
+#+begin_src js
+  class Foo {
+    static bar() {
+      this.baz();
     }
+    static baz() {
+      console.log('hello');
+    }
+    baz() {
+      console.log('world');
+    }
+  }
 
-    Foo.bar() // hello
-#+END_EXAMPLE
+  Foo.bar() // hello
+#+end_src
 
 上面代码中，静态方法=bar=调用了=this.baz=，这里的=this=指的是=Foo=类，而不是=Foo=的实例，等同于调用=Foo.baz=。另外，从这个例子还可以看出，静态方法可以与非静态方法重名。
 
 父类的静态方法，可以被子类继承。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      static classMethod() {
-        return 'hello';
-      }
+#+begin_src js
+  class Foo {
+    static classMethod() {
+      return 'hello';
     }
+  }
 
-    class Bar extends Foo {
-    }
+  class Bar extends Foo {
+  }
 
-    Bar.classMethod() // 'hello'
-#+END_EXAMPLE
+  Bar.classMethod() // 'hello'
+#+end_src
 
 上面代码中，父类=Foo=有一个静态方法，子类=Bar=可以调用这个方法。
 
 静态方法也是可以从=super=对象上调用的。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      static classMethod() {
-        return 'hello';
-      }
+#+begin_src js
+  class Foo {
+    static classMethod() {
+      return 'hello';
     }
+  }
 
-    class Bar extends Foo {
-      static classMethod() {
-        return super.classMethod() + ', too';
-      }
+  class Bar extends Foo {
+    static classMethod() {
+      return super.classMethod() + ', too';
     }
+  }
 
-    Bar.classMethod() // "hello, too"
-#+END_EXAMPLE
+  Bar.classMethod() // "hello, too"
+#+end_src
 
 ** 实例属性的新写法
    :PROPERTIES:
    :CUSTOM_ID: 实例属性的新写法
    :END:
-
 实例属性除了定义在=constructor()=方法里面的=this=上面，也可以定义在类的最顶层。
 
-#+BEGIN_EXAMPLE
-    class IncreasingCounter {
-      constructor() {
-        this._count = 0;
-      }
-      get value() {
-        console.log('Getting the current value!');
-        return this._count;
-      }
-      increment() {
-        this._count++;
-      }
+#+begin_src js
+  class IncreasingCounter {
+    constructor() {
+      this._count = 0;
     }
-#+END_EXAMPLE
+    get value() {
+      console.log('Getting the current value!');
+      return this._count;
+    }
+    increment() {
+      this._count++;
+    }
+  }
+#+end_src
 
 上面代码中，实例属性=this._count=定义在=constructor()=方法里面。另一种写法是，这个属性也可以定义在类的最顶层，其他都不变。
 
-#+BEGIN_EXAMPLE
-    class IncreasingCounter {
-      _count = 0;
-      get value() {
-        console.log('Getting the current value!');
-        return this._count;
-      }
-      increment() {
-        this._count++;
-      }
+#+begin_src js
+  class IncreasingCounter {
+    _count = 0;
+    get value() {
+      console.log('Getting the current value!');
+      return this._count;
     }
-#+END_EXAMPLE
+    increment() {
+      this._count++;
+    }
+  }
+#+end_src
 
 上面代码中，实例属性=_count=与取值函数=value()=和=increment()=方法，处于同一个层级。这时，不需要在实例属性前面加上=this=。
 
 这种新写法的好处是，所有实例对象自身的属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
 
-#+BEGIN_EXAMPLE
-    class foo {
-      bar = 'hello';
-      baz = 'world';
+#+begin_src js
+  class foo {
+    bar = 'hello';
+    baz = 'world';
 
-      constructor() {
-        // ...
-      }
+    constructor() {
+      // ...
     }
-#+END_EXAMPLE
+  }
+#+end_src
 
 上面的代码，一眼就能看出，=foo=类有两个实例属性，一目了然。另外，写起来也比较简洁。
 
@@ -736,47 +725,46 @@ class 内部是严格模式，所以 this
    :PROPERTIES:
    :CUSTOM_ID: 静态属性
    :END:
-
 静态属性指的是 Class
 本身的属性，即=Class.propName=，而不是定义在实例对象（=this=）上的属性。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-    }
+#+begin_src js
+  class Foo {
+  }
 
-    Foo.prop = 1;
-    Foo.prop // 1
-#+END_EXAMPLE
+  Foo.prop = 1;
+  Foo.prop // 1
+#+end_src
 
 上面的写法为=Foo=类定义了一个静态属性=prop=。
 
 目前，只有这种写法可行，因为 ES6 明确规定，Class
 内部只有静态方法，没有静态属性。现在有一个[[https://github.com/tc39/proposal-class-fields][提案]]提供了类的静态属性，写法是在实例属性的前面，加上=static=关键字。
 
-#+BEGIN_EXAMPLE
-    class MyClass {
-      static myStaticProp = 42;
+#+begin_src js
+  class MyClass {
+    static myStaticProp = 42;
 
-      constructor() {
-        console.log(MyClass.myStaticProp); // 42
-      }
+    constructor() {
+      console.log(MyClass.myStaticProp); // 42
     }
-#+END_EXAMPLE
+  }
+#+end_src
 
 这个新写法大大方便了静态属性的表达。
 
-#+BEGIN_EXAMPLE
-    // 老写法
-    class Foo {
-      // ...
-    }
-    Foo.prop = 1;
+#+begin_src js
+  // 老写法
+  class Foo {
+    // ...
+  }
+  Foo.prop = 1;
 
-    // 新写法
-    class Foo {
-      static prop = 1;
-    }
-#+END_EXAMPLE
+  // 新写法
+  class Foo {
+    static prop = 1;
+  }
+#+end_src
 
 上面代码中，老写法的静态属性定义在类的外部。整个类生成以后，再生成静态属性。这样让人很容易忽略这个静态属性，也不符合相关代码应该放在一起的代码组织原则。另外，新写法是显式声明（declarative），而不是赋值处理，语义更好。
 
@@ -784,84 +772,82 @@ class 内部是严格模式，所以 this
    :PROPERTIES:
    :CUSTOM_ID: 私有方法和私有属性
    :END:
-
 *** 现有的解决方案
     :PROPERTIES:
     :CUSTOM_ID: 现有的解决方案
     :END:
-
 私有方法和私有属性，是只能在类的内部访问的方法和属性，外部不能访问。这是常见需求，有利于代码的封装，但
 ES6 不提供，只能通过变通方法模拟实现。
 
 一种做法是在命名上加以区别。
 
-#+BEGIN_EXAMPLE
-    class Widget {
+#+begin_src js
+  class Widget {
 
-      // 公有方法
-      foo (baz) {
-        this._bar(baz);
-      }
-
-      // 私有方法
-      _bar(baz) {
-        return this.snaf = baz;
-      }
-
-      // ...
+    // 公有方法
+    foo (baz) {
+      this._bar(baz);
     }
-#+END_EXAMPLE
+
+    // 私有方法
+    _bar(baz) {
+      return this.snaf = baz;
+    }
+
+    // ...
+  }
+#+end_src
 
 上面代码中，=_bar()=方法前面的下划线，表示这是一个只限于内部使用的私有方法。但是，这种命名是不保险的，在类的外部，还是可以调用到这个方法。
 
 另一种方法就是索性将私有方法移出类，因为类内部的所有方法都是对外可见的。
 
-#+BEGIN_EXAMPLE
-    class Widget {
-      foo (baz) {
-        bar.call(this, baz);
-      }
-
-      // ...
+#+begin_src js
+  class Widget {
+    foo (baz) {
+      bar.call(this, baz);
     }
 
-    function bar(baz) {
-      return this.snaf = baz;
-    }
-#+END_EXAMPLE
+    // ...
+  }
+
+  function bar(baz) {
+    return this.snaf = baz;
+  }
+#+end_src
 
 上面代码中，=foo=是公开方法，内部调用了=bar.call(this, baz)=。这使得=bar()=实际上成为了当前类的私有方法。
 
 还有一种方法是利用=Symbol=值的唯一性，将私有方法的名字命名为一个=Symbol=值。
 
-#+BEGIN_EXAMPLE
-    const bar = Symbol('bar');
-    const snaf = Symbol('snaf');
+#+begin_src js
+  const bar = Symbol('bar');
+  const snaf = Symbol('snaf');
 
-    export default class myClass{
+  export default class myClass{
 
-      // 公有方法
-      foo(baz) {
-        this[bar](baz);
-      }
+    // 公有方法
+    foo(baz) {
+      this[bar](baz);
+    }
 
-      // 私有方法
-      [bar](baz) {
-        return this[snaf] = baz;
-      }
+    // 私有方法
+    [bar](baz) {
+      return this[snaf] = baz;
+    }
 
-      // ...
-    };
-#+END_EXAMPLE
+    // ...
+  };
+#+end_src
 
 上面代码中，=bar=和=snaf=都是=Symbol=值，一般情况下无法获取到它们，因此达到了私有方法和私有属性的效果。但是也不是绝对不行，=Reflect.ownKeys()=依然可以拿到它们。
 
-#+BEGIN_EXAMPLE
-    const inst = new myClass();
+#+begin_src js
+  const inst = new myClass();
 
-    Reflect.ownKeys(myClass.prototype)
-    // [ 'constructor', 'foo', Symbol(bar) ]
-#+END_EXAMPLE
+  Reflect.ownKeys(myClass.prototype)
+  // [ 'constructor', 'foo', Symbol(bar) ]
+#+end_src
 
 上面代码中，Symbol 值的属性名依然可以从类的外部拿到。
 
@@ -869,51 +855,50 @@ ES6 不提供，只能通过变通方法模拟实现。
     :PROPERTIES:
     :CUSTOM_ID: 私有属性的提案
     :END:
-
 目前，有一个[[https://github.com/tc39/proposal-private-methods][提案]]，为=class=加了私有属性。方法是在属性名之前，使用=#=表示。
 
-#+BEGIN_EXAMPLE
-    class IncreasingCounter {
-      #count = 0;
-      get value() {
-        console.log('Getting the current value!');
-        return this.#count;
-      }
-      increment() {
-        this.#count++;
-      }
+#+begin_src js
+  class IncreasingCounter {
+    #count = 0;
+    get value() {
+      console.log('Getting the current value!');
+      return this.#count;
     }
-#+END_EXAMPLE
+    increment() {
+      this.#count++;
+    }
+  }
+#+end_src
 
 上面代码中，=#count=就是私有属性，只能在类的内部使用（=this.#count=）。如果在类的外部使用，就会报错。
 
-#+BEGIN_EXAMPLE
-    const counter = new IncreasingCounter();
-    counter.#count // 报错
-    counter.#count = 42 // 报错
-#+END_EXAMPLE
+#+begin_src js
+  const counter = new IncreasingCounter();
+  counter.#count // 报错
+  counter.#count = 42 // 报错
+#+end_src
 
 上面代码在类的外部，读取私有属性，就会报错。
 
 下面是另一个例子。
 
-#+BEGIN_EXAMPLE
-    class Point {
-      #x;
+#+begin_src js
+  class Point {
+    #x;
 
-      constructor(x = 0) {
-        this.#x = +x;
-      }
-
-      get x() {
-        return this.#x;
-      }
-
-      set x(value) {
-        this.#x = +value;
-      }
+    constructor(x = 0) {
+      this.#x = +x;
     }
-#+END_EXAMPLE
+
+    get x() {
+      return this.#x;
+    }
+
+    set x(value) {
+      this.#x = +value;
+    }
+  }
+#+end_src
 
 上面代码中，=#x=就是私有属性，在=Point=类之外是读取不到这个属性的。由于井号=#=是属性名的一部分，使用时必须带有=#=一起使用，所以=#x=和=x=是两个不同的属性。
 
@@ -925,84 +910,84 @@ JavaScript
 
 这种写法不仅可以写私有属性，还可以用来写私有方法。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      #a;
-      #b;
-      constructor(a, b) {
-        this.#a = a;
-        this.#b = b;
-      }
-      #sum() {
-        return this.#a + this.#b;
-      }
-      printSum() {
-        console.log(this.#sum());
-      }
+#+begin_src js
+  class Foo {
+    #a;
+    #b;
+    constructor(a, b) {
+      this.#a = a;
+      this.#b = b;
     }
-#+END_EXAMPLE
+    #sum() {
+      return this.#a + this.#b;
+    }
+    printSum() {
+      console.log(this.#sum());
+    }
+  }
+#+end_src
 
 上面代码中，=#sum()=就是一个私有方法。
 
 另外，私有属性也可以设置 getter 和 setter 方法。
 
-#+BEGIN_EXAMPLE
-    class Counter {
-      #xValue = 0;
+#+begin_src js
+  class Counter {
+    #xValue = 0;
 
-      constructor() {
-        super();
-        // ...
-      }
-
-      get #x() { return #xValue; }
-      set #x(value) {
-        this.#xValue = value;
-      }
+    constructor() {
+      super();
+      // ...
     }
-#+END_EXAMPLE
+
+    get #x() { return #xValue; }
+    set #x(value) {
+      this.#xValue = value;
+    }
+  }
+#+end_src
 
 上面代码中，=#x=是一个私有属性，它的读写都通过=get #x()=和=set #x()=来完成。
 
 私有属性不限于从=this=引用，只要是在类的内部，实例也可以引用私有属性。
 
-#+BEGIN_EXAMPLE
-    class Foo {
-      #privateValue = 42;
-      static getPrivateValue(foo) {
-        return foo.#privateValue;
-      }
+#+begin_src js
+  class Foo {
+    #privateValue = 42;
+    static getPrivateValue(foo) {
+      return foo.#privateValue;
     }
+  }
 
-    Foo.getPrivateValue(new Foo()); // 42
-#+END_EXAMPLE
+  Foo.getPrivateValue(new Foo()); // 42
+#+end_src
 
 上面代码允许从实例=foo=上面引用私有属性。
 
 私有属性和私有方法前面，也可以加上=static=关键字，表示这是一个静态的私有属性或私有方法。
 
-#+BEGIN_EXAMPLE
-    class FakeMath {
-      static PI = 22 / 7;
-      static #totallyRandomNumber = 4;
+#+begin_src js
+  class FakeMath {
+    static PI = 22 / 7;
+    static #totallyRandomNumber = 4;
 
-      static #computeRandomNumber() {
-        return FakeMath.#totallyRandomNumber;
-      }
-
-      static random() {
-        console.log('I heard you like random numbers…')
-        return FakeMath.#computeRandomNumber();
-      }
+    static #computeRandomNumber() {
+      return FakeMath.#totallyRandomNumber;
     }
 
-    FakeMath.PI // 3.142857142857143
-    FakeMath.random()
-    // I heard you like random numbers…
-    // 4
-    FakeMath.#totallyRandomNumber // 报错
-    FakeMath.#computeRandomNumber() // 报错
-#+END_EXAMPLE
+    static random() {
+      console.log('I heard you like random numbers…')
+      return FakeMath.#computeRandomNumber();
+    }
+  }
+
+  FakeMath.PI // 3.142857142857143
+  FakeMath.random()
+  // I heard you like random numbers…
+  // 4
+  FakeMath.#totallyRandomNumber // 报错
+  FakeMath.#computeRandomNumber() // 报错
+#+end_src
 
 上面代码中，=#totallyRandomNumber=是私有属性，=#computeRandomNumber()=是私有方法，只能在=FakeMath=这个类的内部调用，外部调用就会报错。
 
@@ -1010,114 +995,113 @@ JavaScript
     :PROPERTIES:
     :CUSTOM_ID: in-运算符
     :END:
-
 =try...catch=结构可以用来判断是否存在某个私有属性。
 
-#+BEGIN_EXAMPLE
-    class A {
-      use(obj) {
-        try {
-          obj.#foo;
-        } catch {
-          // 私有属性 #foo 不存在
-        }
+#+begin_src js
+  class A {
+    use(obj) {
+      try {
+        obj.#foo;
+      } catch {
+        // 私有属性 #foo 不存在
       }
     }
+  }
 
-    const a = new A();
-    a.use(a); // 报错
-#+END_EXAMPLE
+  const a = new A();
+  a.use(a); // 报错
+#+end_src
 
 上面示例中，类=A=并不存在私有属性=#foo=，所以=try...catch=报错了。
 
 这样的写法很麻烦，可读性很差，V8
 引擎改进了=in=运算符，使它也可以用来判断私有属性。
 
-#+BEGIN_EXAMPLE
-    class A {
-      use(obj) {
-        if (#foo in obj) {
-          // 私有属性 #foo 存在
-        } else {
-          // 私有属性 #foo 不存在
-        }
+#+begin_src js
+  class A {
+    use(obj) {
+      if (#foo in obj) {
+        // 私有属性 #foo 存在
+      } else {
+        // 私有属性 #foo 不存在
       }
     }
-#+END_EXAMPLE
+  }
+#+end_src
 
 上面示例中，=in=运算符判断当前类=A=的实例，是否有私有属性=#foo=，如果有返回=true=，否则返回=false=。
 
 =in=也可以跟=this=一起配合使用。
 
-#+BEGIN_EXAMPLE
-    class A {
-      #foo = 0;
-      m() {
-        console.log(#foo in this); // true
-        console.log(#bar in this); // false
-      }
+#+begin_src js
+  class A {
+    #foo = 0;
+    m() {
+      console.log(#foo in this); // true
+      console.log(#bar in this); // false
     }
-#+END_EXAMPLE
+  }
+#+end_src
 
 注意，判断私有属性时，=in=只能用在定义该私有属性的类的内部。
 
-#+BEGIN_EXAMPLE
-    class A {
-      #foo = 0;
-      static test(obj) {
-        console.log(#foo in obj);
-      }
+#+begin_src js
+  class A {
+    #foo = 0;
+    static test(obj) {
+      console.log(#foo in obj);
     }
+  }
 
-    A.test(new A()) // true
-    A.test({}) // false
+  A.test(new A()) // true
+  A.test({}) // false
 
-    class B {
-      #foo = 0;
-    }
+  class B {
+    #foo = 0;
+  }
 
-    A.test(new B()) // false
-#+END_EXAMPLE
+  A.test(new B()) // false
+#+end_src
 
 上面示例中，类=A=的私有属性=#foo=，只能在类=A=内部使用=in=运算符判断，而且只对=A=的实例返回=true=，对于其他对象都返回=false=。
 
 子类从父类继承的私有属性，也可以使用=in=运算符来判断。
 
-#+BEGIN_EXAMPLE
-    class A {
-      #foo = 0;
-      static test(obj) {
-        console.log(#foo in obj);
-      }
+#+begin_src js
+  class A {
+    #foo = 0;
+    static test(obj) {
+      console.log(#foo in obj);
     }
+  }
 
-    class SubA extends A {};
+  class SubA extends A {};
 
-    A.test(new SubA()) // true
-#+END_EXAMPLE
+  A.test(new SubA()) // true
+#+end_src
 
 上面示例中，=SubA=从父类继承了私有属性=#foo=，=in=运算符也有效。
 
 注意，=in=运算符对于=Object.create()=、=Object.setPrototypeOf=形成的继承，是无效的，因为这种继承不会传递私有属性。
 
-#+BEGIN_EXAMPLE
-    class A {
-      #foo = 0;
-      static test(obj) {
-        console.log(#foo in obj);
-      }
+#+begin_src js
+  class A {
+    #foo = 0;
+    static test(obj) {
+      console.log(#foo in obj);
     }
-    const a = new A();
+  }
+  const a = new A();
 
-    const o1 = Object.create(a);
-    A.test(o1) // false
-    A.test(o1.__proto__) // true
+  const o1 = Object.create(a);
+  A.test(o1) // false
+  A.test(o1.__proto__) // true
 
-    const o2 = {};
-    Object.setPrototypeOf(o2, A);
-    A.test(o2) // false
-    A.test(o2.__proto__) // true
-#+END_EXAMPLE
+  const o2 = {};
+  Object.setPrototypeOf(o2, A);
+  A.test(o2) // false
+  A.test(o2.__proto__) // true
+#+end_src
 
 上面示例中，对于修改原型链形成的继承，子类都取不到父类的私有属性，所以=in=运算符无效。
 
@@ -1125,90 +1109,89 @@ JavaScript
    :PROPERTIES:
    :CUSTOM_ID: new.target-属性
    :END:
-
 =new=是从构造函数生成实例对象的命令。ES6
 为=new=命令引入了一个=new.target=属性，该属性一般用在构造函数之中，返回=new=命令作用于的那个构造函数。如果构造函数不是通过=new=命令或=Reflect.construct()=调用的，=new.target=会返回=undefined=，因此这个属性可以用来确定构造函数是怎么调用的。
 
-#+BEGIN_EXAMPLE
-    function Person(name) {
-      if (new.target !== undefined) {
-        this.name = name;
-      } else {
-        throw new Error('必须使用 new 命令生成实例');
-      }
+#+begin_src js
+  function Person(name) {
+    if (new.target !== undefined) {
+      this.name = name;
+    } else {
+      throw new Error('必须使用 new 命令生成实例');
     }
+  }
 
-    // 另一种写法
-    function Person(name) {
-      if (new.target === Person) {
-        this.name = name;
-      } else {
-        throw new Error('必须使用 new 命令生成实例');
-      }
+  // 另一种写法
+  function Person(name) {
+    if (new.target === Person) {
+      this.name = name;
+    } else {
+      throw new Error('必须使用 new 命令生成实例');
     }
+  }
 
-    var person = new Person('张三'); // 正确
-    var notAPerson = Person.call(person, '张三');  // 报错
-#+END_EXAMPLE
+  var person = new Person('张三'); // 正确
+  var notAPerson = Person.call(person, '张三');  // 报错
+#+end_src
 
 上面代码确保构造函数只能通过=new=命令调用。
 
 Class 内部调用=new.target=，返回当前 Class。
 
-#+BEGIN_EXAMPLE
-    class Rectangle {
-      constructor(length, width) {
-        console.log(new.target === Rectangle);
-        this.length = length;
-        this.width = width;
-      }
+#+begin_src js
+  class Rectangle {
+    constructor(length, width) {
+      console.log(new.target === Rectangle);
+      this.length = length;
+      this.width = width;
     }
+  }
 
-    var obj = new Rectangle(3, 4); // 输出 true
-#+END_EXAMPLE
+  var obj = new Rectangle(3, 4); // 输出 true
+#+end_src
 
 需要注意的是，子类继承父类时，=new.target=会返回子类。
 
-#+BEGIN_EXAMPLE
-    class Rectangle {
-      constructor(length, width) {
-        console.log(new.target === Rectangle);
-        // ...
-      }
+#+begin_src js
+  class Rectangle {
+    constructor(length, width) {
+      console.log(new.target === Rectangle);
+      // ...
     }
+  }
 
-    class Square extends Rectangle {
-      constructor(length, width) {
-        super(length, width);
-      }
+  class Square extends Rectangle {
+    constructor(length, width) {
+      super(length, width);
     }
+  }
 
-    var obj = new Square(3); // 输出 false
-#+END_EXAMPLE
+  var obj = new Square(3); // 输出 false
+#+end_src
 
 上面代码中，=new.target=会返回子类。
 
 利用这个特点，可以写出不能独立使用、必须继承后才能使用的类。
 
-#+BEGIN_EXAMPLE
-    class Shape {
-      constructor() {
-        if (new.target === Shape) {
-          throw new Error('本类不能实例化');
-        }
+#+begin_src js
+  class Shape {
+    constructor() {
+      if (new.target === Shape) {
+        throw new Error('本类不能实例化');
       }
     }
+  }
 
-    class Rectangle extends Shape {
-      constructor(length, width) {
-        super();
-        // ...
-      }
+  class Rectangle extends Shape {
+    constructor(length, width) {
+      super();
+      // ...
     }
+  }
 
-    var x = new Shape();  // 报错
-    var y = new Rectangle(3, 4);  // 正确
-#+END_EXAMPLE
+  var x = new Shape();  // 报错
+  var y = new Rectangle(3, 4);  // 正确
+#+end_src
 
 上面代码中，=Shape=类不能被实例化，只能用于继承。
 

@@ -6,7 +6,7 @@
 
 本质上，块级作用域是一个语句，将多个操作封装在一起，没有返回值。
 
-```javascript
+```js
 {
   let t = f();
   t = t * t + 1;
@@ -17,7 +17,7 @@
 
 现在有一个[提案](https://github.com/tc39/proposal-do-expressions)，使得块级作用域可以变为表达式，也就是说可以返回值，办法就是在块级作用域之前加上`do`，使它变为`do`表达式，然后就会返回内部最后执行的表达式的值。
 
-```javascript
+```js
 let x = do {
   let t = f();
   t * t + 1;
@@ -28,7 +28,7 @@ let x = do {
 
 `do`表达式的逻辑非常简单：封装的是什么，就会返回什么。
 
-```javascript
+```js
 // 等同于 <表达式>
 do { <表达式>; }
 
@@ -38,7 +38,7 @@ do { <语句> }
 
 `do`表达式的好处是可以封装多个语句，让程序更加模块化，就像乐高积木那样一块块拼装起来。
 
-```javascript
+```js
 let x = do {
   if (foo()) { f() }
   else if (bar()) { g() }
@@ -50,7 +50,7 @@ let x = do {
 
 值得一提的是，`do`表达式在 JSX 语法中非常好用。
 
-```javascript
+```js
 return (
   <nav>
     <Home />
@@ -73,7 +73,7 @@ return (
 
 JavaScript 语法规定`throw`是一个命令，用来抛出错误，不能用于表达式之中。
 
-```javascript
+```js
 // 报错
 console.log(throw new Error());
 ```
@@ -82,7 +82,7 @@ console.log(throw new Error());
 
 现在有一个[提案](https://github.com/tc39/proposal-throw-expressions)，允许`throw`用于表达式。
 
-```javascript
+```js
 // 参数的默认值
 function save(filename = throw new TypeError("Argument required")) {
 }
@@ -124,14 +124,14 @@ class Product {
 
 多参数的函数有时需要绑定其中的一个或多个参数，然后返回一个新函数。
 
-```javascript
+```js
 function add(x, y) { return x + y; }
 function add7(x) { return x + 7; }
 ```
 
 上面代码中，`add7`函数其实是`add`函数的一个特殊版本，通过将一个参数绑定为`7`，就可以从`add`得到`add7`。
 
-```javascript
+```js
 // bind 方法
 const add7 = add.bind(null, 7);
 
@@ -143,7 +143,7 @@ const add7 = x => add(x, 7);
 
 现在有一个[提案](https://github.com/tc39/proposal-partial-application)，使得绑定参数并返回一个新函数更加容易。这叫做函数的部分执行（partial application）。
 
-```javascript
+```js
 const add = (x, y) => x + y;
 const addOne = add(1, ?);
 
@@ -152,7 +152,7 @@ const maxGreaterThanZero = Math.max(0, ...);
 
 根据新提案，`?`是单个参数的占位符，`...`是多个参数的占位符。以下的形式都属于函数的部分执行。
 
-```javascript
+```js
 f(x, ?)
 f(x, ...)
 f(?, x)
@@ -163,7 +163,7 @@ f(..., x, ...)
 
 `?`和`...`只能出现在函数的调用之中，并且会返回一个新函数。
 
-```javascript
+```js
 const g = f(?, 1, ...);
 // 等同于
 const g = (x, ...y) => f(x, 1, ...y);
@@ -171,7 +171,7 @@ const g = (x, ...y) => f(x, 1, ...y);
 
 函数的部分执行，也可以用于对象的方法。
 
-```javascript
+```js
 let obj = {
   f(x, y) { return x + y; },
 };
@@ -186,7 +186,7 @@ g(1) // 4
 
 （1）函数的部分执行是基于原函数的。如果原函数发生变化，部分执行生成的新函数也会立即反映这种变化。
 
-```javascript
+```js
 let f = (x, y) => x + y;
 
 const g = f(?, 3);
@@ -202,7 +202,7 @@ g(1); // 3
 
 （2）如果预先提供的那个值是一个表达式，那么这个表达式并不会在定义时求值，而是在每次调用时求值。
 
-```javascript
+```js
 let a = 3;
 const f = (x, y) => x + y;
 
@@ -218,7 +218,7 @@ g(1); // 11
 
 （3）如果新函数的参数多于占位符的数量，那么多余的参数将被忽略。
 
-```javascript
+```js
 const f = (x, ...y) => [x, ...y];
 const g = f(?, 1);
 g(2, 3, 4); // [2, 1]
@@ -228,7 +228,7 @@ g(2, 3, 4); // [2, 1]
 
 写成下面这样，多余的参数就没有问题。
 
-```javascript
+```js
 const f = (x, ...y) => [x, ...y];
 const g = f(?, 1, ...);
 g(2, 3, 4); // [2, 1, 3, 4];
@@ -236,7 +236,7 @@ g(2, 3, 4); // [2, 1, 3, 4];
 
 （4）`...`只会被采集一次，如果函数的部分执行使用了多个`...`，那么每个`...`的值都将相同。
 
-```javascript
+```js
 const f = (...x) => x;
 const g = f(..., 9, ...);
 g(1, 2, 3); // [1, 2, 3, 9, 1, 2, 3]
@@ -250,7 +250,7 @@ Unix 操作系统有一个管道机制（pipeline），可以把前一个操作�
 
 JavaScript 的管道是一个运算符，写作`|>`。它的左边是一个表达式，右边是一个函数。管道运算符把左边表达式的值，传入右边的函数进行求值。
 
-```javascript
+```js
 x |> f
 // 等同于
 f(x)
@@ -258,7 +258,7 @@ f(x)
 
 管道运算符最大的好处，就是可以把嵌套的函数，写成从左到右的链式表达式。
 
-```javascript
+```js
 function doubleSay (str) {
   return str + ", " + str;
 }
@@ -274,7 +274,7 @@ function exclaim (str) {
 
 上面是三个简单的函数。如果要嵌套执行，传统的写法和管道的写法分别如下。
 
-```javascript
+```js
 // 传统的写法
 exclaim(capitalize(doubleSay('hello')))
 // "Hello, hello!"
@@ -289,7 +289,7 @@ exclaim(capitalize(doubleSay('hello')))
 
 管道运算符只能传递一个值，这意味着它右边的函数必须是一个单参数函数。如果是多参数函数，就必须进行柯里化，改成单参数的版本。
 
-```javascript
+```js
 function double (x) { return x + x; }
 function add (x, y) { return x + y; }
 
@@ -304,7 +304,7 @@ person.score
 
 管道运算符对于`await`函数也适用。
 
-```javascript
+```js
 x |> await f
 // 等同于
 await f(x)
@@ -318,19 +318,19 @@ const userAge = getAgeFromUser(await fetchUserById(userId));
 
 `Math.sign()`用来判断一个值的正负，但是如果参数是`-0`，它会返回`-0`。
 
-```javascript
+```js
 Math.sign(-0) // -0
 ```
 
 这导致对于判断符号位的正负，`Math.sign()`不是很有用。JavaScript 内部使用 64 位浮点数（国际标准 IEEE 754）表示数值，IEEE 754 规定第一位是符号位，`0`表示正数，`1`表示负数。所以会有两种零，`+0`是符号位为`0`时的零值，`-0`是符号位为`1`时的零值。实际编程中，判断一个值是`+0`还是`-0`非常麻烦，因为它们是相等的。
 
-```javascript
+```js
 +0 === -0 // true
 ```
 
 目前，有一个[提案](http://jfbastien.github.io/papers/Math.signbit.html)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
 
-```javascript
+```js
 Math.signbit(2) //false
 Math.signbit(-2) //true
 Math.signbit(0) //false
@@ -352,7 +352,7 @@ Math.signbit(-0) //true
 
 函数绑定运算符是并排的两个冒号（`::`），双冒号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即`this`对象），绑定到右边的函数上面。
 
-```javascript
+```js
 foo::bar;
 // 等同于
 bar.bind(foo);
@@ -369,7 +369,7 @@ function hasOwn(obj, key) {
 
 如果双冒号左边为空，右边是一个对象的方法，则等于将该方法绑定在该对象上面。
 
-```javascript
+```js
 var method = obj::obj.foo;
 // 等同于
 var method = ::obj.foo;
@@ -381,7 +381,7 @@ var log = console.log.bind(console);
 
 如果双冒号运算符的运算结果，还是一个对象，就可以采用链式写法。
 
-```javascript
+```js
 import { map, takeWhile, forEach } from "iterlib";
 
 getPlayers()
@@ -396,7 +396,7 @@ getPlayers()
 
 以前，经常使用`<iframe>`作为沙箱。
 
-```javascript
+```js
 const globalOne = window;
 let iframe = document.createElement('iframe');
 document.body.appendChild(iframe);
@@ -405,7 +405,7 @@ const globalTwo = iframe.contentWindow;
 
 上面代码中，`<iframe>`的全局对象是独立的（`iframe.contentWindow`）。Realm API 可以取代这个功能。
 
-```javascript
+```js
 const globalOne = window;
 const globalTwo = new Realm().global;
 ```
@@ -414,7 +414,7 @@ const globalTwo = new Realm().global;
 
 Realm API 提供一个`Realm()`构造函数，用来生成一个 Realm 对象。该对象的`global`属性指向一个新的顶层对象，这个顶层对象跟原始的顶层对象类似。
 
-```javascript
+```js
 const globalOne = window;
 const globalTwo = new Realm().global;
 
@@ -426,7 +426,7 @@ globalTwo.evaluate('1 + 2') // 3
 
 下面的代码可以证明，Realm 顶层对象与原始顶层对象是两个对象。
 
-```javascript
+```js
 let a1 = globalOne.evaluate('[1,2,3]');
 let a2 = globalTwo.evaluate('[1,2,3]');
 a1.prototype === a2.prototype; // false
@@ -438,7 +438,7 @@ a2 instanceof globalOne.Array; // false
 
 Realm 沙箱里面只能运行 ECMAScript 语法提供的 API，不能运行宿主环境提供的 API。
 
-```javascript
+```js
 globalTwo.evaluate('console.log(1)')
 // throw an error: console is undefined
 ```
@@ -447,13 +447,13 @@ globalTwo.evaluate('console.log(1)')
 
 如果要解决这个问题，可以使用下面的代码。
 
-```javascript
+```js
 globalTwo.console = globalOne.console;
 ```
 
 `Realm()`构造函数可以接受一个参数对象，该参数对象的`intrinsics`属性可以指定 Realm 沙箱继承原始顶层对象的方法。
 
-```javascript
+```js
 const r1 = new Realm();
 r1.global === this;
 r1.global.JSON === JSON; // false
@@ -467,7 +467,7 @@ r2.global.JSON === JSON; // true
 
 用户可以自己定义`Realm`的子类，用来定制自己的沙箱。
 
-```javascript
+```js
 class FakeWindow extends Realm {
   init() {
     super.init();
@@ -500,7 +500,7 @@ Python 脚本的第一行。
 
 现在有一个[提案](https://github.com/tc39/proposal-hashbang)，为 JavaScript 脚本引入了`#!`命令，写在脚本文件或者模块文件的第一行。
 
-```javascript
+```js
 // 写在脚本文件第一行
 #!/usr/bin/env node
 'use strict';
@@ -536,7 +536,7 @@ $ ./hello.js
 
 `import.meta.url`返回当前模块的 URL 路径。举例来说，当前模块主文件的路径是`https://foo.com/main.js`，`import.meta.url`就返回这个路径。如果模块里面还有一个数据文件`data.txt`，那么就可以用下面的代码，获取这个数据文件的路径。
 
-```javascript
+```js
 new URL('data.txt', import.meta.url)
 ```
 
@@ -546,7 +546,7 @@ new URL('data.txt', import.meta.url)
 
 `import.meta.scriptElement`是浏览器特有的元属性，返回加载模块的那个`<script>`元素，相当于`document.currentScript`属性。
 
-```javascript
+```js
 // HTML 代码为
 // <script type="module" src="my-module.js" data-foo="abc"></script>
 
@@ -561,7 +561,7 @@ import 命令目前只能用于加载 ES 模块，现在有一个[提案](https:
 
 假定有一个 JSON 模块文件`config.json`。
 
-```javascript
+```js
 {
   "appName": "My App"
 }
@@ -569,14 +569,14 @@ import 命令目前只能用于加载 ES 模块，现在有一个[提案](https:
 
 目前，只能使用`fetch()`加载 JSON 模块。
 
-```javascript
+```js
 const response = await fetch('./config.json');
 const json = await response.json();
 ```
 
 import 命令能够直接加载 JSON 模块以后，就可以像下面这样写。
 
-```javascript
+```js
 import configData from './config.json' assert { type: "json" };
 console.log(configData.appName);
 ```
@@ -589,13 +589,13 @@ console.log(configData.appName);
 
 动态加载模块的`import()`函数也支持加载 JSON 模块。
 
-```javascript
+```js
 import('./config.json', { assert: { type: 'json' } })
 ```
 
 脚本加载 JSON 模块以后，还可以再用 export 命令输出。这时，可以将 export 和 import 结合成一个语句。
 
-```javascript
+```js
 export { config } from './config.json' assert { type: 'json' };
 ```
 

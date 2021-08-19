@@ -4,7 +4,7 @@
 
 《遍历器》一章说过，Iterator 接口是一种数据遍历的协议，只要调用遍历器对象的`next`方法，就会得到一个对象，表示当前遍历指针所在的那个位置的信息。`next`方法返回的对象的结构是`{value, done}`，其中`value`表示当前的数据的值，`done`是一个布尔值，表示遍历是否结束。
 
-```javascript
+```js
 function idMaker() {
   let index = 0;
 
@@ -27,7 +27,7 @@ it.next().value // 2
 
 这里隐含着一个规定，`it.next()`方法必须是同步的，只要调用就必须立刻返回值。也就是说，一旦执行`it.next()`方法，就必须同步地得到`value`和`done`这两个属性。如果遍历指针正好指向同步操作，当然没有问题，但对于异步操作，就不太合适了。
 
-```javascript
+```js
 function idMaker() {
   let index = 0;
 
@@ -47,7 +47,7 @@ function idMaker() {
 
 目前的解决方法是，将异步操作包装成 Thunk 函数或者 Promise 对象，即`next()`方法返回值的`value`属性是一个 Thunk 函数或者 Promise 对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
 
-```javascript
+```js
 function idMaker() {
   let index = 0;
 
@@ -77,7 +77,7 @@ ES2018 [引入](https://github.com/tc39/proposal-async-iteration)了“异步遍
 
 异步遍历器的最大的语法特点，就是调用遍历器的`next`方法，返回的是一个 Promise 对象。
 
-```javascript
+```js
 asyncIterator
   .next()
   .then(
@@ -91,7 +91,7 @@ asyncIterator
 
 下面是一个异步遍历器的例子。
 
-```javascript
+```js
 const asyncIterable = createAsyncIterable(['a', 'b']);
 const asyncIterator = asyncIterable[Symbol.asyncIterator]();
 
@@ -114,7 +114,7 @@ asyncIterator
 
 由于异步遍历器的`next`方法，返回的是一个 Promise 对象。因此，可以把它放在`await`命令后面。
 
-```javascript
+```js
 async function f() {
   const asyncIterable = createAsyncIterable(['a', 'b']);
   const asyncIterator = asyncIterable[Symbol.asyncIterator]();
@@ -131,7 +131,7 @@ async function f() {
 
 注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的 Promise 对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
 
-```javascript
+```js
 const asyncIterable = createAsyncIterable(['a', 'b']);
 const asyncIterator = asyncIterable[Symbol.asyncIterator]();
 const [{value: v1}, {value: v2}] = await Promise.all([
@@ -143,7 +143,7 @@ console.log(v1, v2); // a b
 
 另一种用法是一次性调用所有的`next`方法，然后`await`最后一步操作。
 
-```javascript
+```js
 async function runner() {
   const writer = openFile('someFile.txt');
   writer.next('hello');
@@ -158,7 +158,7 @@ runner();
 
 前面介绍过，`for...of`循环用于遍历同步的 Iterator 接口。新引入的`for await...of`循环，则是用于遍历异步的 Iterator 接口。
 
-```javascript
+```js
 async function f() {
   for await (const x of createAsyncIterable(['a', 'b'])) {
     console.log(x);
@@ -172,7 +172,7 @@ async function f() {
 
 `for await...of`循环的一个用途，是部署了 asyncIterable 操作的异步接口，可以直接放入这个循环。
 
-```javascript
+```js
 let body = '';
 
 async function f() {
@@ -186,7 +186,7 @@ async function f() {
 
 如果`next`方法返回的 Promise 对象被`reject`，`for await...of`就会报错，要用`try...catch`捕捉。
 
-```javascript
+```js
 async function () {
   try {
     for await (const x of createRejectingIterable()) {
@@ -200,7 +200,7 @@ async function () {
 
 注意，`for await...of`循环也可以用于同步遍历器。
 
-```javascript
+```js
 (async function () {
   for await (const x of ['a', 'b']) {
     console.log(x);
@@ -212,7 +212,7 @@ async function () {
 
 Node v10 支持异步遍历器，Stream 就部署了这个接口。下面是读取文件的传统写法与异步遍历器写法的差异。
 
-```javascript
+```js
 // 传统写法
 function main(inputFilePath) {
   const readStream = fs.createReadStream(
@@ -247,7 +247,7 @@ async function main(inputFilePath) {
 
 在语法上，异步 Generator 函数就是`async`函数与 Generator 函数的结合。
 
-```javascript
+```js
 async function* gen() {
   yield 'hello';
 }
@@ -260,7 +260,7 @@ genObj.next().then(x => console.log(x));
 
 异步遍历器的设计目的之一，就是 Generator 函数处理同步操作和异步操作时，能够使用同一套接口。
 
-```javascript
+```js
 // 同步 Generator 函数
 function* map(iterable, func) {
   const iter = iterable[Symbol.iterator]();
@@ -286,7 +286,7 @@ async function* map(iterable, func) {
 
 下面是另一个异步 Generator 函数的例子。
 
-```javascript
+```js
 async function* readLines(path) {
   let file = await fileOpen(path);
 
@@ -306,7 +306,7 @@ async function* readLines(path) {
 
 上面代码定义的异步 Generator 函数的用法如下。
 
-```javascript
+```js
 (async function () {
   for await (const line of readLines(filePath)) {
     console.log(line);
@@ -316,7 +316,7 @@ async function* readLines(path) {
 
 异步 Generator 函数可以与`for await...of`循环结合起来使用。
 
-```javascript
+```js
 async function* prefixLines(asyncIterable) {
   for await (const line of asyncIterable) {
     yield '> ' + line;
@@ -326,7 +326,7 @@ async function* prefixLines(asyncIterable) {
 
 异步 Generator 函数的返回值是一个异步 Iterator，即每次调用它的`next`方法，会返回一个 Promise 对象，也就是说，跟在`yield`命令后面的，应该是一个 Promise 对象。如果像上面那个例子那样，`yield`命令后面是一个字符串，会被自动包装成一个 Promise 对象。
 
-```javascript
+```js
 function fetchRandom() {
   const url = 'https://www.random.org/decimal-fractions/'
     + '?num=1&dec=10&col=1&format=plain&rnd=new';
@@ -357,7 +357,7 @@ ag.next().then(({value, done}) => {
 
 A 和 B 两行的作用类似于下面的代码。
 
-```javascript
+```js
 return new Promise((resolve, reject) => {
   fetchRandom()
   .then(result => result.text())
@@ -372,7 +372,7 @@ return new Promise((resolve, reject) => {
 
 如果异步 Generator 函数抛出错误，会导致 Promise 对象的状态变为`reject`，然后抛出的错误被`catch`方法捕获。
 
-```javascript
+```js
 async function* asyncGenerator() {
   throw new Error('Problem!');
 }
@@ -384,7 +384,7 @@ asyncGenerator()
 
 注意，普通的 async 函数返回的是一个 Promise 对象，而异步 Generator 函数返回的是一个异步 Iterator 对象。可以这样理解，async 函数和异步 Generator 函数，是封装异步操作的两种方法，都用来达到同一种目的。区别在于，前者自带执行器，后者通过`for await...of`执行，或者自己编写执行器。下面就是一个异步 Generator 函数的执行器。
 
-```javascript
+```js
 async function takeAsync(asyncIterable, count = Infinity) {
   const result = [];
   const iterator = asyncIterable[Symbol.asyncIterator]();
@@ -401,7 +401,7 @@ async function takeAsync(asyncIterable, count = Infinity) {
 
 下面是这个自动执行器的一个使用实例。
 
-```javascript
+```js
 async function f() {
   async function* gen() {
     yield 'a';
@@ -421,7 +421,7 @@ f().then(function (result) {
 
 异步 Generator 函数也可以通过`next`方法的参数，接收外部传入的数据。
 
-```javascript
+```js
 const writer = openFile('someFile.txt');
 writer.next('hello'); // 立即执行
 writer.next('world'); // 立即执行
@@ -432,7 +432,7 @@ await writer.return(); // 等待写入结束
 
 最后，同步的数据结构，也可以使用异步 Generator 函数。
 
-```javascript
+```js
 async function* createAsyncIterable(syncIterable) {
   for (const elem of syncIterable) {
     yield elem;
@@ -446,7 +446,7 @@ async function* createAsyncIterable(syncIterable) {
 
 `yield*`语句也可以跟一个异步遍历器。
 
-```javascript
+```js
 async function* gen1() {
   yield 'a';
   yield 'b';
@@ -463,7 +463,7 @@ async function* gen2() {
 
 与同步 Generator 函数一样，`for await...of`循环会展开`yield*`。
 
-```javascript
+```js
 (async function () {
   for await (const x of gen2()) {
     console.log(x);

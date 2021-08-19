@@ -2,7 +2,6 @@
   :PROPERTIES:
   :CUSTOM_ID: 参考链接
   :END:
-
 ** 官方文件
    :PROPERTIES:
    :CUSTOM_ID: 官方文件
@@ -50,7 +49,7 @@
   Ecmascript-6 tricks you can perform right now]]
 - Colin Toh,
   [[http://colintoh.com/blog/lightweight-es6-features][Lightweight ES6
-  Features That Pack A Punch]]: ES6 的一些"轻量级"的特性介绍
+  Features That Pack A Punch]]: ES6 的一些“轻量级”的特性介绍
 - Domenic Denicola,
   [[http://www.slideshare.net/domenicdenicola/es6-the-awesome-parts][ES6:
   The Awesome Parts]]

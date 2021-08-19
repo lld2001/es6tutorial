@@ -134,7 +134,7 @@ An object containing functions to render tokens to HTML.
 The renderer option allows you to render tokens in a custom manor. Here is an
 example of overriding the default heading token rendering by adding an embedded anchor tag like on GitHub:
 
-```javascript
+```js
 var marked = require('marked');
 var renderer = new marked.Renderer();
 

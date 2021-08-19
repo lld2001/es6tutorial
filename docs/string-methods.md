@@ -6,7 +6,7 @@
 
 ES5 提供`String.fromCharCode()`方法，用于从 Unicode 码点返回对应字符，但是这个方法不能识别码点大于`0xFFFF`的字符。
 
-```javascript
+```js
 String.fromCharCode(0x20BB7)
 // "ஷ"
 ```
@@ -15,7 +15,7 @@ String.fromCharCode(0x20BB7)
 
 ES6 提供了`String.fromCodePoint()`方法，可以识别大于`0xFFFF`的字符，弥补了`String.fromCharCode()`方法的不足。在作用上，正好与下面的`codePointAt()`方法相反。
 
-```javascript
+```js
 String.fromCodePoint(0x20BB7)
 // "𠮷"
 String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
@@ -30,7 +30,7 @@ String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
 
 ES6 还为原生的 String 对象，提供了一个`raw()`方法。该方法返回一个斜杠都被转义（即斜杠前面再加一个斜杠）的字符串，往往用于模板字符串的处理方法。
 
-```javascript
+```js
 String.raw`Hi\n${2+3}!`
 // 实际返回 "Hi\\n5!"，显示的是转义后的结果 "Hi\n5!"
 
@@ -40,7 +40,7 @@ String.raw`Hi\u000A!`;
 
 如果原字符串的斜杠已经转义，那么`String.raw()`会进行再次转义。
 
-```javascript
+```js
 String.raw`Hi\\n`
 // 返回 "Hi\\\\n"
 
@@ -51,7 +51,7 @@ String.raw`Hi\\n` === "Hi\\\\n" // true
 
 `String.raw()`本质上是一个正常的函数，只是专用于模板字符串的标签函数。如果写成正常函数的形式，它的第一个参数，应该是一个具有`raw`属性的对象，且`raw`属性的值应该是一个数组，对应模板字符串解析后的值。
 
-```javascript
+```js
 // `foo${1 + 2}bar`
 // 等同于
 String.raw({ raw: ['foo', 'bar'] }, 1 + 2) // "foo3bar"
@@ -61,7 +61,7 @@ String.raw({ raw: ['foo', 'bar'] }, 1 + 2) // "foo3bar"
 
 作为函数，`String.raw()`的代码实现基本如下。
 
-```javascript
+```js
 String.raw = function (strings, ...values) {
   let output = '';
   let index;
@@ -78,7 +78,7 @@ String.raw = function (strings, ...values) {
 
 JavaScript 内部，字符以 UTF-16 的格式储存，每个字符固定为`2`个字节。对于那些需要`4`个字节储存的字符（Unicode 码点大于`0xFFFF`的字符），JavaScript 会认为它们是两个字符。
 
-```javascript
+```js
 var s = "𠮷";
 
 s.length // 2
@@ -92,7 +92,7 @@ s.charCodeAt(1) // 57271
 
 ES6 提供了`codePointAt()`方法，能够正确处理 4 个字节储存的字符，返回一个字符的码点。
 
-```javascript
+```js
 let s = '𠮷a';
 
 s.codePointAt(0) // 134071
@@ -107,7 +107,7 @@ s.codePointAt(2) // 97
 
 `codePointAt()`方法返回的是码点的十进制值，如果想要十六进制的值，可以使用`toString()`方法转换一下。
 
-```javascript
+```js
 let s = '𠮷a';
 
 s.codePointAt(0).toString(16) // "20bb7"
@@ -116,7 +116,7 @@ s.codePointAt(2).toString(16) // "61"
 
 你可能注意到了，`codePointAt()`方法的参数，仍然是不正确的。比如，上面代码中，字符`a`在字符串`s`的正确位置序号应该是 1，但是必须向`codePointAt()`方法传入 2。解决这个问题的一个办法是使用`for...of`循环，因为它会正确识别 32 位的 UTF-16 字符。
 
-```javascript
+```js
 let s = '𠮷a';
 for (let ch of s) {
   console.log(ch.codePointAt(0).toString(16));
@@ -127,7 +127,7 @@ for (let ch of s) {
 
 另一种方法也可以，使用扩展运算符（`...`）进行展开运算。
 
-```javascript
+```js
 let arr = [...'𠮷a']; // arr.length === 2
 arr.forEach(
   ch => console.log(ch.codePointAt(0).toString(16))
@@ -138,7 +138,7 @@ arr.forEach(
 
 `codePointAt()`方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
-```javascript
+```js
 function is32Bit(c) {
   return c.codePointAt(0) > 0xFFFF;
 }
@@ -153,7 +153,7 @@ is32Bit("a") // false
 
 这两种表示方法，在视觉和语义上都等价，但是 JavaScript 不能识别。
 
-```javascript
+```js
 '\u01D1'==='\u004F\u030C' //false
 
 '\u01D1'.length // 1
@@ -164,7 +164,7 @@ is32Bit("a") // false
 
 ES6 提供字符串实例的`normalize()`方法，用来将字符的不同表示方法统一为同样的形式，这称为 Unicode 正规化。
 
-```javascript
+```js
 '\u01D1'.normalize() === '\u004F\u030C'.normalize()
 // true
 ```
@@ -176,7 +176,7 @@ ES6 提供字符串实例的`normalize()`方法，用来将字符的不同表示
 - `NFKC`，表示“兼容等价合成”（Normalization Form Compatibility Composition），返回合成字符。所谓“兼容等价”指的是语义上存在等价，但视觉上不等价，比如“囍”和“喜喜”。（这只是用来举例，`normalize`方法不能识别中文。）
 - `NFKD`，表示“兼容等价分解”（Normalization Form Compatibility Decomposition），即在兼容等价的前提下，返回合成字符分解的多个简单字符。
 
-```javascript
+```js
 '\u004F\u030C'.normalize('NFC').length // 1
 '\u004F\u030C'.normalize('NFD').length // 2
 ```
@@ -193,7 +193,7 @@ ES6 提供字符串实例的`normalize()`方法，用来将字符的不同表示
 - **startsWith()**：返回布尔值，表示参数字符串是否在原字符串的头部。
 - **endsWith()**：返回布尔值，表示参数字符串是否在原字符串的尾部。
 
-```javascript
+```js
 let s = 'Hello world!';
 
 s.startsWith('Hello') // true
@@ -203,7 +203,7 @@ s.includes('o') // true
 
 这三个方法都支持第二个参数，表示开始搜索的位置。
 
-```javascript
+```js
 let s = 'Hello world!';
 
 s.startsWith('world', 6) // true
@@ -217,7 +217,7 @@ s.includes('Hello', 6) // false
 
 `repeat`方法返回一个新字符串，表示将原字符串重复`n`次。
 
-```javascript
+```js
 'x'.repeat(3) // "xxx"
 'hello'.repeat(2) // "hellohello"
 'na'.repeat(0) // ""
@@ -225,13 +225,13 @@ s.includes('Hello', 6) // false
 
 参数如果是小数，会被取整。
 
-```javascript
+```js
 'na'.repeat(2.9) // "nana"
 ```
 
 如果`repeat`的参数是负数或者`Infinity`，会报错。
 
-```javascript
+```js
 'na'.repeat(Infinity)
 // RangeError
 'na'.repeat(-1)
@@ -240,19 +240,19 @@ s.includes('Hello', 6) // false
 
 但是，如果参数是 0 到-1 之间的小数，则等同于 0，这是因为会先进行取整运算。0 到-1 之间的小数，取整以后等于`-0`，`repeat`视同为 0。
 
-```javascript
+```js
 'na'.repeat(-0.9) // ""
 ```
 
 参数`NaN`等同于 0。
 
-```javascript
+```js
 'na'.repeat(NaN) // ""
 ```
 
 如果`repeat`的参数是字符串，则会先转换成数字。
 
-```javascript
+```js
 'na'.repeat('na') // ""
 'na'.repeat('3') // "nanana"
 ```
@@ -261,7 +261,7 @@ s.includes('Hello', 6) // false
 
 ES2017 引入了字符串补全长度的功能。如果某个字符串不够指定长度，会在头部或尾部补全。`padStart()`用于头部补全，`padEnd()`用于尾部补全。
 
-```javascript
+```js
 'x'.padStart(5, 'ab') // 'ababx'
 'x'.padStart(4, 'ab') // 'abax'
 
@@ -273,28 +273,28 @@ ES2017 引入了字符串补全长度的功能。如果某个字符串不够指�
 
 如果原字符串的长度，等于或大于最大长度，则字符串补全不生效，返回原字符串。
 
-```javascript
+```js
 'xxx'.padStart(2, 'ab') // 'xxx'
 'xxx'.padEnd(2, 'ab') // 'xxx'
 ```
 
 如果用来补全的字符串与原字符串，两者的长度之和超过了最大长度，则会截去超出位数的补全字符串。
 
-```javascript
+```js
 'abc'.padStart(10, '0123456789')
 // '0123456abc'
 ```
 
 如果省略第二个参数，默认使用空格补全长度。
 
-```javascript
+```js
 'x'.padStart(4) // '   x'
 'x'.padEnd(4) // 'x   '
 ```
 
 `padStart()`的常见用途是为数值补全指定位数。下面代码生成 10 位的数值字符串。
 
-```javascript
+```js
 '1'.padStart(10, '0') // "0000000001"
 '12'.padStart(10, '0') // "0000000012"
 '123456'.padStart(10, '0') // "0000123456"
@@ -302,7 +302,7 @@ ES2017 引入了字符串补全长度的功能。如果某个字符串不够指�
 
 另一个用途是提示字符串格式。
 
-```javascript
+```js
 '12'.padStart(10, 'YYYY-MM-DD') // "YYYY-MM-12"
 '09-12'.padStart(10, 'YYYY-MM-DD') // "YYYY-09-12"
 ```
@@ -311,7 +311,7 @@ ES2017 引入了字符串补全长度的功能。如果某个字符串不够指�
 
 [ES2019](https://github.com/tc39/proposal-string-left-right-trim) 对字符串实例新增了`trimStart()`和`trimEnd()`这两个方法。它们的行为与`trim()`一致，`trimStart()`消除字符串头部的空格，`trimEnd()`消除尾部的空格。它们返回的都是新字符串，不会修改原始字符串。
 
-```javascript
+```js
 const s = '  abc  ';
 
 s.trim() // "abc"
@@ -333,7 +333,7 @@ s.trimEnd() // "  abc"
 
 历史上，字符串的实例方法`replace()`只能替换第一个匹配。
 
-```javascript
+```js
 'aabbcc'.replace('b', '_')
 // 'aa_bcc'
 ```
@@ -342,21 +342,21 @@ s.trimEnd() // "  abc"
 
 如果要替换所有的匹配，不得不使用正则表达式的`g`修饰符。
 
-```javascript
+```js
 'aabbcc'.replace(/b/g, '_')
 // 'aa__cc'
 ```
 
 正则表达式毕竟不是那么方便和直观，[ES2021](https://github.com/tc39/proposal-string-replaceall) 引入了`replaceAll()`方法，可以一次性替换所有匹配。
 
-```javascript
+```js
 'aabbcc'.replaceAll('b', '_')
 // 'aa__cc'
 ```
 
 它的用法与`replace()`相同，返回一个新字符串，不会改变原字符串。
 
-```javascript
+```js
 String.prototype.replaceAll(searchValue, replacement)
 ```
 
@@ -364,7 +364,7 @@ String.prototype.replaceAll(searchValue, replacement)
 
 如果`searchValue`是一个不带有`g`修饰符的正则表达式，`replaceAll()`会报错。这一点跟`replace()`不同。
 
-```javascript
+```js
 // 不报错
 'aabbcc'.replace(/b/, '_')
 
@@ -384,7 +384,7 @@ String.prototype.replaceAll(searchValue, replacement)
 
 下面是一些例子。
 
-```javascript
+```js
 // $& 表示匹配的字符串，即`b`本身
 // 所以返回结果与原字符串一致
 'abbc'.replaceAll('b', '$&')
@@ -414,7 +414,7 @@ String.prototype.replaceAll(searchValue, replacement)
 
 `replaceAll()`的第二个参数`replacement`除了为字符串，也可以是一个函数，该函数的返回值将替换掉第一个参数`searchValue`匹配的文本。
 
-```javascript
+```js
 'aabbcc'.replaceAll('b', () => '_')
 // 'aa__cc'
 ```
@@ -423,7 +423,7 @@ String.prototype.replaceAll(searchValue, replacement)
 
 这个替换函数可以接受多个参数。第一个参数是捕捉到的匹配内容，第二个参数捕捉到是组匹配（有多少个组匹配，就有多少个对应的参数）。此外，最后还可以添加两个参数，倒数第二个参数是捕捉到的内容在整个字符串中的位置，最后一个参数是原字符串。
 
-```javascript
+```js
 const str = '123abc456';
 const regex = /(\d+)([a-z]+)(\d+)/g;
 

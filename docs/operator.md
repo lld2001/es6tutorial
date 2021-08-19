@@ -6,14 +6,14 @@
 
 ES2016 新增了一个指数运算符（`**`）。
 
-```javascript
+```js
 2 ** 2 // 4
 2 ** 3 // 8
 ```
 
 这个运算符的一个特点是右结合，而不是常见的左结合。多个指数运算符连用时，是从最右边开始计算的。
 
-```javascript
+```js
 // 相当于 2 ** (3 ** 2)
 2 ** 3 ** 2
 // 512
@@ -23,7 +23,7 @@ ES2016 新增了一个指数运算符（`**`）。
 
 指数运算符可以与等号结合，形成一个新的赋值运算符（`**=`）。
 
-```javascript
+```js
 let a = 1.5;
 a **= 2;
 // 等同于 a = a * a;
@@ -37,7 +37,7 @@ b **= 3;
 
 编程实务中，如果读取对象内部的某个属性，往往需要判断一下，属性的上层对象是否存在。比如，读取`message.body.user.firstName`这个属性，安全的写法是写成下面这样。
 
-```javascript
+```js
 // 错误的写法
 const  firstName = message.body.user.firstName || 'default';
 
@@ -52,7 +52,7 @@ const firstName = (message
 
 三元运算符`?:`也常用于判断对象是否存在。
 
-```javascript
+```js
 const fooInput = myForm.querySelector('input[name=foo]')
 const fooValue = fooInput ? fooInput.value : undefined
 ```
@@ -61,7 +61,7 @@ const fooValue = fooInput ? fooInput.value : undefined
 
 这样的层层判断非常麻烦，因此 [ES2020](https://github.com/tc39/proposal-optional-chaining) 引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
 
-```javascript
+```js
 const firstName = message?.body?.user?.firstName || 'default';
 const fooValue = myForm.querySelector('input[name=foo]')?.value
 ```
@@ -70,7 +70,7 @@ const fooValue = myForm.querySelector('input[name=foo]')?.value
 
 下面是判断对象方法是否存在，如果存在就立即执行的例子。
 
-```javascript
+```js
 iterator.return?.()
 ```
 
@@ -78,7 +78,7 @@ iterator.return?.()
 
 对于那些可能没有实现的方法，这个运算符尤其有用。
 
-```javascript
+```js
 if (myForm.checkValidity?.() === false) {
   // 表单校验失败
   return;
@@ -103,7 +103,7 @@ let hex = "#C0FFEE".match(/#([A-Z]+)/i)?.[1];
 
 下面是`?.`运算符常见形式，以及不使用该运算符时的等价形式。
 
-```javascript
+```js
 a?.b
 // 等同于
 a == null ? undefined : a.b
@@ -129,7 +129,7 @@ a == null ? undefined : a()
 
 本质上，`?.`运算符相当于一种短路机制，只要不满足条件，就不再往下执行。
 
-```javascript
+```js
 a?.[++x]
 // 等同于
 a == null ? undefined : a[++x]
@@ -141,7 +141,7 @@ a == null ? undefined : a[++x]
 
 如果属性链有圆括号，链判断运算符对圆括号外部没有影响，只对圆括号内部有影响。
 
-```javascript
+```js
 (a?.b).c
 // 等价于
 (a == null ? undefined : a.b).c
@@ -155,7 +155,7 @@ a == null ? undefined : a[++x]
 
 以下写法是禁止的，会报错。
 
-```javascript
+```js
 // 构造函数
 new a?.()
 new a?.b()
@@ -180,7 +180,7 @@ a?.b = c
 
 读取对象属性的时候，如果某个属性的值是`null`或`undefined`，有时候需要为它们指定默认值。常见做法是通过`||`运算符指定默认值。
 
-```javascript
+```js
 const headerText = response.settings.headerText || 'Hello, world!';
 const animationDuration = response.settings.animationDuration || 300;
 const showSplashScreen = response.settings.showSplashScreen || true;
@@ -190,7 +190,7 @@ const showSplashScreen = response.settings.showSplashScreen || true;
 
 为了避免这种情况，[ES2020](https://github.com/tc39/proposal-nullish-coalescing) 引入了一个新的 Null 判断运算符`??`。它的行为类似`||`，但是只有运算符左侧的值为`null`或`undefined`时，才会返回右侧的值。
 
-```javascript
+```js
 const headerText = response.settings.headerText ?? 'Hello, world!';
 const animationDuration = response.settings.animationDuration ?? 300;
 const showSplashScreen = response.settings.showSplashScreen ?? true;
@@ -200,7 +200,7 @@ const showSplashScreen = response.settings.showSplashScreen ?? true;
 
 这个运算符的一个目的，就是跟链判断运算符`?.`配合使用，为`null`或`undefined`的值设置默认值。
 
-```javascript
+```js
 const animationDuration = response.settings?.animationDuration ?? 300;
 ```
 
@@ -208,7 +208,7 @@ const animationDuration = response.settings?.animationDuration ?? 300;
 
 这个运算符很适合判断函数参数是否赋值。
 
-```javascript
+```js
 function Component(props) {
   const enable = props.enabled ?? true;
   // …
@@ -217,7 +217,7 @@ function Component(props) {
 
 上面代码判断`props`参数的`enabled`属性是否赋值，基本等同于下面的写法。
 
-```javascript
+```js
 function Component(props) {
   const {
     enabled: enable = true,
@@ -230,7 +230,7 @@ function Component(props) {
 
 现在的规则是，如果多个逻辑运算符一起使用，必须用括号表明优先级，否则会报错。
 
-```javascript
+```js
 // 报错
 lhs && middle ?? rhs
 lhs ?? middle && rhs
@@ -240,7 +240,7 @@ lhs ?? middle || rhs
 
 上面四个表达式都会报错，必须加入表明优先级的括号。
 
-```javascript
+```js
 (lhs && middle) ?? rhs;
 lhs && (middle ?? rhs);
 
@@ -258,7 +258,7 @@ lhs ?? (middle || rhs);
 
 ES2021 引入了三个新的[逻辑赋值运算符](https://github.com/tc39/proposal-logical-assignment)（logical assignment operators），将逻辑运算符与赋值运算符进行结合。
 
-```javascript
+```js
 // 或赋值运算符
 x ||= y
 // 等同于
@@ -279,7 +279,7 @@ x ?? (x = y)
 
 它们的一个用途是，为变量或属性设置默认值。
 
-```javascript
+```js
 // 老的写法
 user.id = user.id || 1;
 
@@ -291,7 +291,7 @@ user.id ||= 1;
 
 下面是另一个例子。
 
-```javascript
+```js
 function example(opts) {
   opts.foo = opts.foo ?? 'bar';
   opts.baz ?? (opts.baz = 'qux');
@@ -300,7 +300,7 @@ function example(opts) {
 
 上面示例中，参数对象`opts`如果不存在属性`foo`和属性`baz`，则为这两个属性设置默认值。有了“Null 赋值运算符”以后，就可以统一写成下面这样。
 
-```javascript
+```js
 function example(opts) {
   opts.foo ??= 'bar';
   opts.baz ??= 'qux';

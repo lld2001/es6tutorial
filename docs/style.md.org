@@ -2,7 +2,6 @@
   :PROPERTIES:
   :CUSTOM_ID: 编程风格
   :END:
-
 本章探讨如何将 ES6 的新语法，运用到编码实践之中，与传统的 JavaScript
 语法结合在一起，写出合理的、易于阅读和维护的代码。
 
@@ -14,36 +13,35 @@
    :PROPERTIES:
    :CUSTOM_ID: 块级作用域
    :END:
-
 *（1）let 取代 var*
 
 ES6
 提出了两个新的声明变量的命令：=let=和=const=。其中，=let=完全可以取代=var=，因为两者语义相同，而且=let=没有副作用。
 
-#+BEGIN_EXAMPLE
-    'use strict';
+#+begin_src js
+  'use strict';
 
-    if (true) {
-      let x = 'hello';
-    }
+  if (true) {
+    let x = 'hello';
+  }
 
-    for (let i = 0; i < 10; i++) {
-      console.log(i);
-    }
-#+END_EXAMPLE
+  for (let i = 0; i < 10; i++) {
+    console.log(i);
+  }
+#+end_src
 
 上面代码如果用=var=替代=let=，实际上就声明了两个全局变量，这显然不是本意。变量应该只在其声明的代码块内有效，=var=命令做不到这一点。
 
 =var=命令存在变量提升效用，=let=命令没有这个问题。
 
-#+BEGIN_EXAMPLE
-    'use strict';
+#+begin_src js
+  'use strict';
 
-    if (true) {
-      console.log(x); // ReferenceError
-      let x = 'hello';
-    }
-#+END_EXAMPLE
+  if (true) {
+    console.log(x); // ReferenceError
+    let x = 'hello';
+  }
+#+end_src
 
 上面代码如果使用=var=替代=let=，=console.log=那一行就不会报错，而是会输出=undefined=，因为变量声明提升到代码块的头部。这违反了变量先声明后使用的原则。
 
@@ -57,18 +55,18 @@ ES6
 JavaScript
 编译器会对=const=进行优化，所以多使用=const=，有利于提高程序的运行效率，也就是说=let=和=const=的本质区别，其实是编译器内部的处理不同。
 
-#+BEGIN_EXAMPLE
-    // bad
-    var a = 1, b = 2, c = 3;
+#+begin_src js
+  // bad
+  var a = 1, b = 2, c = 3;
 
-    // good
-    const a = 1;
-    const b = 2;
-    const c = 3;
+  // good
+  const a = 1;
+  const b = 2;
+  const c = 3;
 
-    // best
-    const [a, b, c] = [1, 2, 3];
-#+END_EXAMPLE
+  // best
+  const [a, b, c] = [1, 2, 3];
+#+end_src
 
 =const=声明常量还有两个好处，一是阅读代码的人立刻会意识到不应该修改这个值，二是防止了无意间修改变量值所导致的错误。
 
@@ -81,495 +79,486 @@ JavaScript
    :PROPERTIES:
    :CUSTOM_ID: 字符串
    :END:
-
 静态字符串一律使用单引号或反引号，不使用双引号。动态字符串使用反引号。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const a = "foobar";
-    const b = 'foo' + a + 'bar';
+#+begin_src js
+  // bad
+  const a = "foobar";
+  const b = 'foo' + a + 'bar';
 
-    // acceptable
-    const c = `foobar`;
+  // acceptable
+  const c = `foobar`;
 
-    // good
-    const a = 'foobar';
-    const b = `foo${a}bar`;
-#+END_EXAMPLE
+  // good
+  const a = 'foobar';
+  const b = `foo${a}bar`;
+#+end_src
 
 ** 解构赋值
    :PROPERTIES:
    :CUSTOM_ID: 解构赋值
    :END:
-
 使用数组成员对变量赋值时，优先使用解构赋值。
 
-#+BEGIN_EXAMPLE
-    const arr = [1, 2, 3, 4];
+#+begin_src js
+  const arr = [1, 2, 3, 4];
 
-    // bad
-    const first = arr[0];
-    const second = arr[1];
+  // bad
+  const first = arr[0];
+  const second = arr[1];
 
-    // good
-    const [first, second] = arr;
-#+END_EXAMPLE
+  // good
+  const [first, second] = arr;
+#+end_src
 
 函数的参数如果是对象的成员，优先使用解构赋值。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function getFullName(user) {
-      const firstName = user.firstName;
-      const lastName = user.lastName;
-    }
+#+begin_src js
+  // bad
+  function getFullName(user) {
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+  }
 
-    // good
-    function getFullName(obj) {
-      const { firstName, lastName } = obj;
-    }
+  // good
+  function getFullName(obj) {
+    const { firstName, lastName } = obj;
+  }
 
-    // best
-    function getFullName({ firstName, lastName }) {
-    }
-#+END_EXAMPLE
+  // best
+  function getFullName({ firstName, lastName }) {
+  }
+#+end_src
 
 如果函数返回多个值，优先使用对象的解构赋值，而不是数组的解构赋值。这样便于以后添加返回值，以及更改返回值的顺序。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function processInput(input) {
-      return [left, right, top, bottom];
-    }
+#+begin_src js
+  // bad
+  function processInput(input) {
+    return [left, right, top, bottom];
+  }
 
-    // good
-    function processInput(input) {
-      return { left, right, top, bottom };
-    }
+  // good
+  function processInput(input) {
+    return { left, right, top, bottom };
+  }
 
-    const { left, right } = processInput(input);
-#+END_EXAMPLE
+  const { left, right } = processInput(input);
+#+end_src
 
 ** 对象
    :PROPERTIES:
    :CUSTOM_ID: 对象
    :END:
-
 单行定义的对象，最后一个成员不以逗号结尾。多行定义的对象，最后一个成员以逗号结尾。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const a = { k1: v1, k2: v2, };
-    const b = {
-      k1: v1,
-      k2: v2
-    };
+#+begin_src js
+  // bad
+  const a = { k1: v1, k2: v2, };
+  const b = {
+    k1: v1,
+    k2: v2
+  };
 
-    // good
-    const a = { k1: v1, k2: v2 };
-    const b = {
-      k1: v1,
-      k2: v2,
-    };
-#+END_EXAMPLE
+  // good
+  const a = { k1: v1, k2: v2 };
+  const b = {
+    k1: v1,
+    k2: v2,
+  };
+#+end_src
 
 对象尽量静态化，一旦定义，就不得随意添加新的属性。如果添加属性不可避免，要使用=Object.assign=方法。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const a = {};
-    a.x = 3;
+#+begin_src js
+  // bad
+  const a = {};
+  a.x = 3;
 
-    // if reshape unavoidable
-    const a = {};
-    Object.assign(a, { x: 3 });
+  // if reshape unavoidable
+  const a = {};
+  Object.assign(a, { x: 3 });
 
-    // good
-    const a = { x: null };
-    a.x = 3;
-#+END_EXAMPLE
+  // good
+  const a = { x: null };
+  a.x = 3;
+#+end_src
 
 如果对象的属性名是动态的，可以在创造对象的时候，使用属性表达式定义。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const obj = {
-      id: 5,
-      name: 'San Francisco',
-    };
-    obj[getKey('enabled')] = true;
+#+begin_src js
+  // bad
+  const obj = {
+    id: 5,
+    name: 'San Francisco',
+  };
+  obj[getKey('enabled')] = true;
 
-    // good
-    const obj = {
-      id: 5,
-      name: 'San Francisco',
-      [getKey('enabled')]: true,
-    };
-#+END_EXAMPLE
+  // good
+  const obj = {
+    id: 5,
+    name: 'San Francisco',
+    [getKey('enabled')]: true,
+  };
+#+end_src
 
 上面代码中，对象=obj=的最后一个属性名，需要计算得到。这时最好采用属性表达式，在新建=obj=的时候，将该属性与其他属性定义在一起。这样一来，所有属性就在一个地方定义了。
 
 另外，对象的属性和方法，尽量采用简洁表达法，这样易于描述和书写。
 
-#+BEGIN_EXAMPLE
-    var ref = 'some value';
+#+begin_src js
+  var ref = 'some value';
 
-    // bad
-    const atom = {
-      ref: ref,
+  // bad
+  const atom = {
+    ref: ref,
 
-      value: 1,
+    value: 1,
 
-      addValue: function (value) {
-        return atom.value + value;
-      },
-    };
+    addValue: function (value) {
+      return atom.value + value;
+    },
+  };
 
-    // good
-    const atom = {
-      ref,
+  // good
+  const atom = {
+    ref,
 
-      value: 1,
+    value: 1,
 
-      addValue(value) {
-        return atom.value + value;
-      },
-    };
-#+END_EXAMPLE
+    addValue(value) {
+      return atom.value + value;
+    },
+  };
+#+end_src
 
 ** 数组
    :PROPERTIES:
    :CUSTOM_ID: 数组
    :END:
-
 使用扩展运算符（...）拷贝数组。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const len = items.length;
-    const itemsCopy = [];
-    let i;
+#+begin_src js
+  // bad
+  const len = items.length;
+  const itemsCopy = [];
+  let i;
 
-    for (i = 0; i < len; i++) {
-      itemsCopy[i] = items[i];
-    }
+  for (i = 0; i < len; i++) {
+    itemsCopy[i] = items[i];
+  }
 
-    // good
-    const itemsCopy = [...items];
-#+END_EXAMPLE
+  // good
+  const itemsCopy = [...items];
+#+end_src
 
 使用 Array.from 方法，将类似数组的对象转为数组。
 
-#+BEGIN_EXAMPLE
-    const foo = document.querySelectorAll('.foo');
-    const nodes = Array.from(foo);
-#+END_EXAMPLE
+#+begin_src js
+  const foo = document.querySelectorAll('.foo');
+  const nodes = Array.from(foo);
+#+end_src
 
 ** 函数
    :PROPERTIES:
    :CUSTOM_ID: 函数
    :END:
-
 立即执行函数可以写成箭头函数的形式。
 
-#+BEGIN_EXAMPLE
-    (() => {
-      console.log('Welcome to the Internet.');
-    })();
-#+END_EXAMPLE
+#+begin_src js
+  (() => {
+    console.log('Welcome to the Internet.');
+  })();
+#+end_src
 
 那些使用匿名函数当作参数的场合，尽量用箭头函数代替。因为这样更简洁，而且绑定了
 this。
 
-#+BEGIN_EXAMPLE
-    // bad
-    [1, 2, 3].map(function (x) {
-      return x * x;
-    });
+#+begin_src js
+  // bad
+  [1, 2, 3].map(function (x) {
+    return x * x;
+  });
 
-    // good
-    [1, 2, 3].map((x) => {
-      return x * x;
-    });
+  // good
+  [1, 2, 3].map((x) => {
+    return x * x;
+  });
 
-    // best
-    [1, 2, 3].map(x => x * x);
-#+END_EXAMPLE
+  // best
+  [1, 2, 3].map(x => x * x);
+#+end_src
 
 箭头函数取代=Function.prototype.bind=，不应再用 self/_this/that 绑定
 this。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const self = this;
-    const boundMethod = function(...params) {
-      return method.apply(self, params);
-    }
+#+begin_src js
+  // bad
+  const self = this;
+  const boundMethod = function(...params) {
+    return method.apply(self, params);
+  }
 
-    // acceptable
-    const boundMethod = method.bind(this);
+  // acceptable
+  const boundMethod = method.bind(this);
 
-    // best
-    const boundMethod = (...params) => method.apply(this, params);
-#+END_EXAMPLE
+  // best
+  const boundMethod = (...params) => method.apply(this, params);
+#+end_src
 
 简单的、单行的、不会复用的函数，建议采用箭头函数。如果函数体较为复杂，行数较多，还是应该采用传统的函数写法。
 
 所有配置项都应该集中在一个对象，放在最后一个参数，布尔值不可以直接作为参数。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function divide(a, b, option = false ) {
-    }
+#+begin_src js
+  // bad
+  function divide(a, b, option = false ) {
+  }
 
-    // good
-    function divide(a, b, { option = false } = {}) {
-    }
-#+END_EXAMPLE
+  // good
+  function divide(a, b, { option = false } = {}) {
+  }
+#+end_src
 
 不要在函数体内使用 arguments 变量，使用 rest 运算符（...）代替。因为
 rest 运算符显式表明你想要获取参数，而且 arguments
 是一个类似数组的对象，而 rest 运算符可以提供一个真正的数组。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function concatenateAll() {
-      const args = Array.prototype.slice.call(arguments);
-      return args.join('');
-    }
+#+begin_src js
+  // bad
+  function concatenateAll() {
+    const args = Array.prototype.slice.call(arguments);
+    return args.join('');
+  }
 
-    // good
-    function concatenateAll(...args) {
-      return args.join('');
-    }
-#+END_EXAMPLE
+  // good
+  function concatenateAll(...args) {
+    return args.join('');
+  }
+#+end_src
 
 使用默认值语法设置函数参数的默认值。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function handleThings(opts) {
-      opts = opts || {};
-    }
+#+begin_src js
+  // bad
+  function handleThings(opts) {
+    opts = opts || {};
+  }
 
-    // good
-    function handleThings(opts = {}) {
-      // ...
-    }
-#+END_EXAMPLE
+  // good
+  function handleThings(opts = {}) {
+    // ...
+  }
+#+end_src
 
 ** Map 结构
    :PROPERTIES:
    :CUSTOM_ID: map-结构
    :END:
-
 注意区分 Object 和 Map，只有模拟现实世界的实体对象时，才使用
 Object。如果只是需要=key: value=的数据结构，使用 Map 结构。因为 Map
 有内建的遍历机制。
 
-#+BEGIN_EXAMPLE
-    let map = new Map(arr);
+#+begin_src js
+  let map = new Map(arr);
 
-    for (let key of map.keys()) {
-      console.log(key);
-    }
+  for (let key of map.keys()) {
+    console.log(key);
+  }
 
-    for (let value of map.values()) {
-      console.log(value);
-    }
+  for (let value of map.values()) {
+    console.log(value);
+  }
 
-    for (let item of map.entries()) {
-      console.log(item[0], item[1]);
-    }
-#+END_EXAMPLE
+  for (let item of map.entries()) {
+    console.log(item[0], item[1]);
+  }
+#+end_src
 
 ** Class
    :PROPERTIES:
    :CUSTOM_ID: class
    :END:
-
 总是用 Class，取代需要 prototype 的操作。因为 Class
 的写法更简洁，更易于理解。
 
-#+BEGIN_EXAMPLE
-    // bad
-    function Queue(contents = []) {
+#+begin_src js
+  // bad
+  function Queue(contents = []) {
+    this._queue = [...contents];
+  }
+  Queue.prototype.pop = function() {
+    const value = this._queue[0];
+    this._queue.splice(0, 1);
+    return value;
+  }
+
+  // good
+  class Queue {
+    constructor(contents = []) {
       this._queue = [...contents];
     }
-    Queue.prototype.pop = function() {
+    pop() {
       const value = this._queue[0];
       this._queue.splice(0, 1);
       return value;
     }
-
-    // good
-    class Queue {
-      constructor(contents = []) {
-        this._queue = [...contents];
-      }
-      pop() {
-        const value = this._queue[0];
-        this._queue.splice(0, 1);
-        return value;
-      }
-    }
-#+END_EXAMPLE
+  }
+#+end_src
 
 使用=extends=实现继承，因为这样更简单，不会有破坏=instanceof=运算的危险。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const inherits = require('inherits');
-    function PeekableQueue(contents) {
-      Queue.apply(this, contents);
-    }
-    inherits(PeekableQueue, Queue);
-    PeekableQueue.prototype.peek = function() {
+#+begin_src js
+  // bad
+  const inherits = require('inherits');
+  function PeekableQueue(contents) {
+    Queue.apply(this, contents);
+  }
+  inherits(PeekableQueue, Queue);
+  PeekableQueue.prototype.peek = function() {
+    return this._queue[0];
+  }
+
+  // good
+  class PeekableQueue extends Queue {
+    peek() {
       return this._queue[0];
     }
-
-    // good
-    class PeekableQueue extends Queue {
-      peek() {
-        return this._queue[0];
-      }
-    }
-#+END_EXAMPLE
+  }
+#+end_src
 
 ** 模块
    :PROPERTIES:
    :CUSTOM_ID: 模块
    :END:
-
 首先，Module 语法是 JavaScript
 模块的标准写法，坚持使用这种写法。使用=import=取代=require=。
 
-#+BEGIN_EXAMPLE
-    // bad
-    const moduleA = require('moduleA');
-    const func1 = moduleA.func1;
-    const func2 = moduleA.func2;
+#+begin_src js
+  // bad
+  const moduleA = require('moduleA');
+  const func1 = moduleA.func1;
+  const func2 = moduleA.func2;
 
-    // good
-    import { func1, func2 } from 'moduleA';
-#+END_EXAMPLE
+  // good
+  import { func1, func2 } from 'moduleA';
+#+end_src
 
 使用=export=取代=module.exports=。
 
-#+BEGIN_EXAMPLE
-    // commonJS的写法
-    var React = require('react');
+#+begin_src js
+  // commonJS的写法
+  var React = require('react');
 
-    var Breadcrumbs = React.createClass({
-      render() {
-        return <nav />;
-      }
-    });
+  var Breadcrumbs = React.createClass({
+    render() {
+      return <nav />;
+    }
+  });
 
-    module.exports = Breadcrumbs;
+  module.exports = Breadcrumbs;
 
-    // ES6的写法
-    import React from 'react';
+  // ES6的写法
+  import React from 'react';
 
-    class Breadcrumbs extends React.Component {
-      render() {
-        return <nav />;
-      }
-    };
+  class Breadcrumbs extends React.Component {
+    render() {
+      return <nav />;
+    }
+  };
 
-    export default Breadcrumbs;
-#+END_EXAMPLE
+  export default Breadcrumbs;
+#+end_src
 
 如果模块只有一个输出值，就使用=export default=，如果模块有多个输出值，就不使用=export default=，=export default=与普通的=export=不要同时使用。
 
 不要在模块输入中使用通配符。因为这样可以确保你的模块之中，有一个默认输出（export
 default）。
 
-#+BEGIN_EXAMPLE
-    // bad
-    import * as myObject from './importModule';
+#+begin_src js
+  // bad
+  import * as myObject from './importModule';
 
-    // good
-    import myObject from './importModule';
-#+END_EXAMPLE
+  // good
+  import myObject from './importModule';
+#+end_src
 
 如果模块默认输出一个函数，函数名的首字母应该小写。
 
-#+BEGIN_EXAMPLE
-    function makeStyleGuide() {
-    }
+#+begin_src js
+  function makeStyleGuide() {
+  }
 
-    export default makeStyleGuide;
-#+END_EXAMPLE
+  export default makeStyleGuide;
+#+end_src
 
 如果模块默认输出一个对象，对象名的首字母应该大写。
 
-#+BEGIN_EXAMPLE
-    const StyleGuide = {
-      es6: {
-      }
-    };
+#+begin_src js
+  const StyleGuide = {
+    es6: {
+    }
+  };
 
-    export default StyleGuide;
-#+END_EXAMPLE
+  export default StyleGuide;
+#+end_src
 
 ** ESLint 的使用
    :PROPERTIES:
    :CUSTOM_ID: eslint-的使用
    :END:
-
 ESLint
 是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。
 
 首先，在项目的根目录安装 ESLint。
 
-#+BEGIN_SRC sh
-    $ npm install --save-dev eslint
-#+END_SRC
+#+begin_src shell
+  $ npm install --save-dev eslint
+#+end_src
 
 然后，安装 Airbnb 语法规则，以及 import、a11y、react 插件。
 
-#+BEGIN_SRC sh
-    $ npm install --save-dev eslint-config-airbnb
-    $ npm install --save-dev eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
-#+END_SRC
+#+begin_src shell
+  $ npm install --save-dev eslint-config-airbnb
+  $ npm install --save-dev eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+#+end_src
 
 最后，在项目的根目录下新建一个=.eslintrc=文件，配置 ESLint。
 
-#+BEGIN_EXAMPLE
-    {
-      "extends": "eslint-config-airbnb"
-    }
-#+END_EXAMPLE
+#+begin_src js
+  {
+    "extends": "eslint-config-airbnb"
+  }
+#+end_src
 
 现在就可以检查，当前项目的代码是否符合预设的规则。
 
 =index.js=文件的代码如下。
 
-#+BEGIN_EXAMPLE
-    var unused = 'I have no purpose!';
+#+begin_src js
+  var unused = 'I have no purpose!';
 
-    function greet() {
-        var message = 'Hello, World!';
-        console.log(message);
-    }
+  function greet() {
+      var message = 'Hello, World!';
+      console.log(message);
+  }
 
-    greet();
-#+END_EXAMPLE
+  greet();
+#+end_src
 
 使用 ESLint 检查这个文件，就会报出错误。
 
-#+BEGIN_SRC sh
-    $ npx eslint index.js
-    index.js
-      1:1  error  Unexpected var, use let or const instead          no-var
-      1:5  error  unused is defined but never used                 no-unused-vars
-      4:5  error  Expected indentation of 2 characters but found 4  indent
-      4:5  error  Unexpected var, use let or const instead          no-var
-      5:5  error  Expected indentation of 2 characters but found 4  indent
+#+begin_src shell
+  $ npx eslint index.js
+  index.js
+    1:1  error  Unexpected var, use let or const instead          no-var
+    1:5  error  unused is defined but never used                 no-unused-vars
+    4:5  error  Expected indentation of 2 characters but found 4  indent
+    4:5  error  Unexpected var, use let or const instead          no-var
+    5:5  error  Expected indentation of 2 characters but found 4  indent
 
-    ✖ 5 problems (5 errors, 0 warnings)
-#+END_SRC
+  ✖ 5 problems (5 errors, 0 warnings)
+#+end_src
 
 上面代码说明，原文件有五个错误，其中两个是不应该使用=var=命令，而要使用=let=或=const=；一个是定义了变量，却没有使用；另外两个是行首缩进为
 4 个空格，而不是规定的 2 个空格。
